@@ -17,7 +17,7 @@ public class Product implements backend.interfaces.Product {
     final Integer quantity;
     final Float price;
     
-    Product(String type, String id,
+    public Product(String type, String id,
             String description, Integer quantity, Float price) {
         this.id = id;
         this.type = type;

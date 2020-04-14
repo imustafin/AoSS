@@ -370,44 +370,6 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
             }
         } // button
 
-        //Now, if there was no error in the data fields, we try to
-        //connect to the database.
-
-        if ( !fieldError )
-        {
-            try
-            {
-                msgString = ">> Establishing Driver...";
-                jTextArea1.setText("\n"+msgString);
-
-                //load JDBC driver class for MySQL
-                Class.forName( "com.mysql.jdbc.Driver" );
-
-                msgString = ">> Setting up URL...";
-                jTextArea1.append("\n"+msgString);
-
-                //define the data source
-                String SQLServerIP = jTextField1.getText();
-                String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/leaftech";
-
-                msgString = ">> Establishing connection with: " + sourceURL + "...";
-                jTextArea1.append("\n"+msgString);
-
-                //create a connection to the db
-                DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
-            } catch (Exception e) {
-
-                errString =  "\nProblem connecting to database:: " + e;
-                jTextArea1.append(errString);
-                connectError = true;
-
-            } // end try-catch
-        } // fieldError check
-
-        //If there is not connection error, then we form the SQL statement
-        //and then execute it.
-
         if (!connectError && !fieldError )
         {
             try
@@ -417,71 +379,19 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 productID = jTextField2.getText();
                 quantity = Integer.parseInt(jTextField4.getText());
                 perUnitCost = Float.parseFloat(jTextField3.getText());
-
-                // create an SQL statement variable and create the INSERT
-                // query to insert the new inventory into the database
-
-                s = DBConn.createStatement();
-
-                // if culture boxes are selected then insert inventory into cultureboxes 
-                // table
-
-                if (selectedType.equals("cultureboxes"))
-                {
-                    SQLstatement = ( "INSERT INTO cultureboxes (productid, " +
-                            "productdescription, productquantity, productprice) VALUES ( '" +
-                            productID + "', " + "'" + description + "', " +
-                            quantity + ", " + perUnitCost + ");");
-        
-                    tableSelected = "CULTURE BOXES";
-                }
-
-                // if processing equipment is selected then insert inventory into strubs
-                // table
-
-                if (selectedType.equals("processing"))
-                {
-                    SQLstatement = ( "INSERT INTO processing (productid, " +
-                            "productdescription, productquantity, productprice) VALUES ( '" +
-                            productID + "', " + "'" + description + "', " +
-                            quantity + ", " + perUnitCost + ");");
-                    
-                    tableSelected = "PROCESSING";
-                }
-
-                // if genomics are selected then insert inventory into the genomics
-                // table
-
-                if (selectedType.equals("genomics"))
-                {
-                    SQLstatement = ( "INSERT INTO genomics (productid, " +
-                            "productdescription, productquantity, productprice) VALUES ( '" +
-                            productID + "', " + "'" + description + "', " +
-                            quantity + ", " + perUnitCost + ");");
                 
-                    tableSelected = "GENOMICS";
-                }
-
-                // if reference materials are selected then insert inventory into referencematerials
-                // table
-
-                if (selectedType.equals("referencematerials"))
-                {
-                    SQLstatement = ( "INSERT INTO referencematerials (productid, " +
-                            "productdescription, productquantity, productprice) VALUES ( '" +
-                            productID + "', " + "'" + description + "', " +
-                            quantity + ", " + perUnitCost + ");");
-                    
-                    tableSelected = "REFERENCE MATERIALS";
-                }
-
-                // execute the update
-                executeUpdateVal = s.executeUpdate(SQLstatement);
+                backend.addProduct(new backend.direct.Product(
+                        selectedType,
+                        productID,
+                        description,
+                        quantity,
+                        perUnitCost
+                ));
 
                 // let the user know all went well
                 
                 jTextArea1.setText("");
-                jTextArea1.append("\nINVENTORY UPDATED... The following was added to " + tableSelected + "...\n");
+                jTextArea1.append("\nINVENTORY UPDATED... The following was added...\n");
                 jTextArea1.append("\n DESCRIPTION:: " + description );
                 jTextArea1.append("\n QUANTITITY::  " + quantity );
                 jTextArea1.append("\n UNIT COST::   " + perUnitCost );

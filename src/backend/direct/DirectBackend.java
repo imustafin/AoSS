@@ -108,12 +108,20 @@ public class DirectBackend implements Backend {
         return ans;
     }
     
+    boolean isEepsType(String type) {
+        return Arrays.asList(EEPS_PRODUCT_TYPES).contains(type);
+    }
+    
+    boolean isLeaftechType(String type) {
+        return Arrays.asList(LEAFTECH_PRODUCT_TYPES).contains(type);
+    }
+    
     @Override
     public List<Product> getProductsByType(String type) throws SQLException, ClassNotFoundException {
-        if (Arrays.asList(EEPS_PRODUCT_TYPES).contains(type)) {
+        if (isEepsType(type)) {
             return eepsProductsByType(type);
         } else {
-            if (Arrays.asList(LEAFTECH_PRODUCT_TYPES).contains(type)) {
+            if (isLeaftechType(type)) {
                 return leaftechProductsByType(type);
             }
         }
@@ -124,5 +132,46 @@ public class DirectBackend implements Backend {
     @Override
     public List<Order> getOrders(Boolean isShipped) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    void addLeaftechProduct(Product product) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("leaftech");
+        
+        String sql = "INSERT INTO " + product.getType()
+                + "(productid, productdescription, productquantity, productprice)"
+                + " VALUES ("
+                + "'" + product.getId() + "', "
+                + "'" + product.getDescription() + "', "
+                + product.getQuantity() + ", "
+                + product.getPrice()
+                + ");";
+        
+        con.createStatement().execute(sql);
+    }
+    
+    void addEepsProduct(Product product) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("inventory");
+        
+        String sql = "INSERT INTO " + product.getType()
+                + "(product_code, description, quantity, price)"
+                + " VALUES ("
+                + "'" + product.getId() + "', "
+                + "'" + product.getDescription() + "', "
+                + product.getQuantity() + ", "
+                + product.getPrice()
+                + ");";
+        
+        con.createStatement().execute(sql);
+    }
+    
+    @Override
+    public void addProduct(Product product) throws SQLException, ClassNotFoundException {
+        if (isEepsType(product.getType())) {
+            addEepsProduct(product);
+        } else {
+            if (isLeaftechType(product.getType())) {
+                addLeaftechProduct(product);
+            }
+        }
     }
 }

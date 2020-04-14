@@ -31,4 +31,12 @@ public interface Backend {
      * @throws java.lang.Exception specific exceptions depend on implementation
      */
     List<Order> getOrders(Boolean isShipped) throws Exception;
+    
+    /**
+     * Add product to database
+     * 
+     * @param product what to add
+     * @throws Exception 
+     */
+    void addProduct(Product product) throws Exception;
 }
