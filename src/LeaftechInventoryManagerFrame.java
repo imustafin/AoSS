@@ -5,12 +5,14 @@ import backend.interfaces.Product;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.event.ListSelectionEvent;
 
 /******************************************************************************
  * File:NewJFrame.java
@@ -51,13 +53,14 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
     DirectBackend backend;
     
     ComboBoxModel<String> getProductTypeComboBoxModel() {
-        Vector<String> types = new Vector();
-
-        for (Product p : backend.getProductTypes()) {
-            types.add(p.getType());
+        List<String> typeList = backend.getProductTypes();
+        String[] typeArray = new String[typeList.size()];
+        
+        for (int i = 0; i < typeArray.length; i++) {
+            typeArray[i] = typeList.get(i);
         }
-
-        return new DefaultComboBoxModel<>(types);
+        
+        return new DefaultComboBoxModel<>(typeArray);
     }
 
     /** This method is called from within the constructor to

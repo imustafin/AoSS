@@ -16,7 +16,7 @@ public interface Backend {
      * @return All possible product types
      * @throws java.lang.Exception specific exceptions depend on implementation
      */
-    List<Product> getProductTypes() throws Exception;
+    List<String> getProductTypes() throws Exception;
     
     /**
      * @param type products of which type to get

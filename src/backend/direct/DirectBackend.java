@@ -46,12 +46,12 @@ public class DirectBackend implements Backend {
     };
     
     @Override
-    public List<Product> getProductTypes() {
-        List<Product> ans = new ArrayList<Product>();
+    public List<String> getProductTypes() {
+        List<String> ans = new ArrayList<>();
         
         for (String[] types : PRODUCT_TYPE_ARRAYS) {
             for (String type : types) {
-                ans.add(new backend.direct.Product(null, type, null, null, null, null));
+                ans.add(type);
             }
         }
         
