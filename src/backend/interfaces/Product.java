@@ -10,21 +10,15 @@ package backend.interfaces;
  * @author ilgiz
  */
 public interface Product {
-    
-    /**
-     * @return Id of the good or null if there is no access to this field
-     */
-    String getId();
-    
     /**
      * @return Type of the good or null if there is no access to this field
      */
     String getType();
     
     /**
-     * @return Product code of the good or null if there is no access to this field
+     * @return Id (productid/product_code) of the good or null if there is no access to this field
      */
-    String getProductCode();
+    String getId();
     
     /**
      * @return Description of the good or null if there is no access to this field

@@ -11,18 +11,16 @@ package backend.direct;
  */
 public class Product implements backend.interfaces.Product {
     
-    final String id;
     final String type;
-    final String productCode;
+    final String id;
     final String description;
     final Integer quantity;
     final Float price;
     
-    Product(String id, String type, String productCode,
+    Product(String type, String id,
             String description, Integer quantity, Float price) {
         this.id = id;
         this.type = type;
-        this.productCode = productCode;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
@@ -36,11 +34,6 @@ public class Product implements backend.interfaces.Product {
     @Override
     public String getType() {
         return type;
-    }
-
-    @Override
-    public String getProductCode() {
-        return productCode;
     }
 
     @Override
