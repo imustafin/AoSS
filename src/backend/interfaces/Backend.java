@@ -36,7 +36,16 @@ public interface Backend {
      * Add product to database
      * 
      * @param product what to add
-     * @throws Exception 
+     * @throws Exception specific exceptions depend on implementation
      */
     void addProduct(Product product) throws Exception;
+    
+    /**
+     * Delete product by type and id
+     * 
+     * @param product what to delete with type and id
+     * @return how many records were deleted
+     * @throws Exception specific exceptions depend on implementation
+     */
+    Integer deleteProduct(Product product) throws Exception;
 }

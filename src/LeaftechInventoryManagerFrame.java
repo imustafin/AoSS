@@ -521,66 +521,18 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 jTextArea1.setText("");
                 jTextArea1.append( "Deleting ProductID: " + productID );
 
-                // set up a connection to the LeafTech database
-                try
-                {                
-                    //load JDBC driver class for MySQL
-                    Class.forName( "com.mysql.jdbc.Driver" );
-
-                    //define the data source
-                    String SQLServerIP = jTextField1.getText();
-                    String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/leaftech";
-
-                    //create a connection to the db
-                    DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
-                } catch (Exception e) {
-
-                    errString =  "\nProblem connecting to database:: " + e;
-                    jTextArea1.append(errString);
-                    connectError = true;
-
-                } // end try-catch
-                
-                //If there is no connection error, then we form the SQL statement
-                //to delete the inventory item and then execute it.
-
                 String selectedType = (String) productTypeComboBox.getSelectedItem();
                 
                 if (!connectError )
                 {
                     try
                     {
-                        s = DBConn.createStatement();
-
-                        // if culture boxes inventory selected
-                        if (selectedType.equals("cultureboxes"))
-                        {
-                            SQLstatement = ( "DELETE FROM cultureboxes WHERE productid = '" + productID + "';");
-                        }
-
-                        // if processing equipment inventory selected
-                        if (selectedType.equals("processing"))
-                        {
-                            SQLstatement = ( "DELETE FROM processing WHERE productid = '" + productID + "';");
-                        }
-
-                        // if genomics inventory selected
-                        if (selectedType.equals("genomics"))
-                        {
-                            SQLstatement = ( "DELETE FROM genomics WHERE productid = '" + productID + "';");
-                        }
-
-                        // if reference materials  inventory selected
-                        if (selectedType.equals("referencematerials"))
-                        {
-                            SQLstatement = ( "DELETE FROM referencematerials WHERE productid = '" + productID + "';");
-                        }
-
-                        // execute the delete query
-                        
-                        executeUpdateVal = s.executeUpdate(SQLstatement);
-
+                        executeUpdateVal = backend.deleteProduct(new backend.direct.Product(
+                                selectedType,
+                                productID,
+                                null,
+                                null,
+                                null));
                         // let the user know all went well
                         
                         jTextArea1.append("\n\n" + productID + " deleted...");

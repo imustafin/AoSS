@@ -174,4 +174,35 @@ public class DirectBackend implements Backend {
             }
         }
     }
+    
+    Integer deleteEepsProduct(Product product) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("inventory");
+        
+        String sql = "DELETE FROM " + product.getType()
+                + " WHERE product_code = '" + product.getId() + "';";
+        
+        return con.createStatement().executeUpdate(sql);
+    }
+    
+    Integer deleteLeaftechProduct(Product product) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("leaftech");
+        
+        String sql = "DELETE FROM " + product.getType()
+                + " WHERE productid = '" + product.getId() + "';";
+        
+        return con.createStatement().executeUpdate(sql);
+    }
+    
+    @Override
+    public Integer deleteProduct(Product product) throws SQLException, ClassNotFoundException {
+        if (isEepsType(product.getType())) {
+            return deleteEepsProduct(product);
+        } else {
+            if (isLeaftechType(product.getType())) {
+                return deleteLeaftechProduct(product);
+            }
+        }
+        
+        return null;
+    }
 }
