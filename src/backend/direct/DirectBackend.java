@@ -10,8 +10,10 @@ import backend.interfaces.Order;
 import backend.interfaces.Product;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,8 +31,12 @@ public class DirectBackend implements Backend {
         this.password = password;
     }
     
-    Connection getDbConnection() throws SQLException {
-        return DriverManager.getConnection(host, user, password);
+    Connection getDbConnection(String database) throws SQLException, ClassNotFoundException {
+        Class.forName( "com.mysql.jdbc.Driver" );
+        
+        String url = "jdbc:mysql://" + host + ":3306/" + database;
+        
+        return DriverManager.getConnection(url, user, password);
     }
     
     final String[] EEPS_PRODUCT_TYPES = {
@@ -57,10 +63,62 @@ public class DirectBackend implements Backend {
         
         return ans;
     }
+    
+    List<Product> eepsProductsByType(String type) throws SQLException, ClassNotFoundException {
+        List<Product> ans = new ArrayList<>();
+        
+        Connection con = getDbConnection("inventory");
+        
+        String sql = "SELECT * FROM " + type;
+        
+        ResultSet res = con.createStatement().executeQuery(sql);
 
+        while (res.next()) {
+            ans.add(new backend.direct.Product(
+                    type,
+                    res.getString("product_code"),
+                    res.getString("description"),
+                    res.getInt("quantity"),
+                    res.getFloat("price")
+            ));
+        }
+
+        return ans;
+    }
+    
+    List<Product> leaftechProductsByType(String type) throws SQLException, SQLException, ClassNotFoundException {
+        List<Product> ans = new ArrayList<>();
+        
+        Connection con = getDbConnection("leaftech");
+        
+        String sql = "SELECT * FROM " + type;
+        
+        ResultSet res = con.createStatement().executeQuery(sql);
+        
+        while (res.next()) {
+            ans.add(new backend.direct.Product(
+                    type,
+                    res.getString("productid"),
+                    res.getString("productdescription"),
+                    res.getInt("productquantity"),
+                    res.getFloat("productprice")
+            ));
+        }
+        
+        return ans;
+    }
+    
     @Override
-    public List<Product> getProductsByType(String type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Product> getProductsByType(String type) throws SQLException, ClassNotFoundException {
+        if (Arrays.asList(EEPS_PRODUCT_TYPES).contains(type)) {
+            return eepsProductsByType(type);
+        } else {
+            if (Arrays.asList(LEAFTECH_PRODUCT_TYPES).contains(type)) {
+                return leaftechProductsByType(type);
+            }
+        }
+        
+        return new ArrayList<>();
     }
 
     @Override

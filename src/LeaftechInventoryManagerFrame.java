@@ -499,18 +499,14 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // This button will list the inventory for the product selected by the
-        // radio button
+        // This button will list the inventory for the product selected
 
         Boolean connectError = false;   // Error flag
-        Connection DBConn = null;       // MySQL connection handle
-        Boolean executeError = false;   // Error flag
         String errString = null;        // String for displaying errors
         Boolean fieldError = true;      // Error flag
         String msgString = null;        // String for displaying non-error messages
-        ResultSet res = null;           // SQL query result set pointer
-        String tableSelected = null;    // String used to determine which data table to use
-        java.sql.Statement s = null;    // SQL statement pointer
+        
+        List<Product> products = null;
 
         String selectedType = (String) productTypeComboBox.getSelectedItem();
         
@@ -538,91 +534,25 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
 
             try
             {
-                msgString = ">> Establishing Driver...";
-                jTextArea1.setText("\n"+msgString);
-
-                //load JDBC driver class for MySQL
-                Class.forName( "com.mysql.jdbc.Driver" );
-
-                msgString = ">> Setting up URL...";
-                jTextArea1.append("\n"+msgString);
-
-                //define the data source
-                String SQLServerIP = jTextField1.getText();
-                String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/leaftech";
-
-                msgString = ">> Establishing connection with: " + sourceURL + "...";
-                jTextArea1.append("\n"+msgString);
-
-                //create a connection to the db
-                DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
+                products = backend.getProductsByType(selectedType);
             } catch (Exception e) {
-
-                errString =  "\nProblem connecting to database:: " + e;
+                errString =  "\nProblem getting products:: " + e;
                 jTextArea1.append(errString);
                 connectError = true;
-
             } // end try-catch
-
         } // fielderror check - make sure a product is selected
 
-        //If there is not connection error, then we form the SQL statement
-        //and then execute it.
-
-        if (!connectError && !fieldError)
-        {
-            try
-            {
-                // create an SQL statement variable and create the INSERT
-                // query to insert the new inventory into the database
-
-                s = DBConn.createStatement();
-
-                // now we build a query to list the inventory table contents
-                // for the user
-                // ... here is the SQL for culture boxes
-                if (selectedType.equals("cultureboxes"))
-                {
-                    res = s.executeQuery( "Select * from cultureboxes" );
-                    tableSelected = "CULTURE BOXES";
-                }
-                // ... here is the SQL for processing
-                if (selectedType.equals("processing"))
-                {
-                    res = s.executeQuery( "Select * from processing" );
-                    tableSelected = "PROCESSING";
-                }
-                // ... here is the SQL for genomics
-                if (selectedType.equals("genomics"))
-                {
-                    res = s.executeQuery( "Select * from genomics" );
-                    tableSelected = "GENOMICS";
-                }
-                // ... here is the SQL for genomics
-                if (selectedType.equals("referencematerials"))
-                {
-                    res = s.executeQuery( "Select * from referencematerials" );
-                    tableSelected = "REFERENCE MATERIALS";
-                }
-
-                // Now we list the inventory for the selected table
-                jTextArea1.setText("");
-                while (res.next())
-                {
-                    msgString = tableSelected+">>" + res.getString(1) + "::" + res.getString(2) +
-                            " :: "+ res.getString(3) + "::" + res.getString(4);
-                    jTextArea1.append("\n"+msgString);
-
-                } // while
-
-            } catch(Exception e) {
-
-                errString =  "\nProblem with " + tableSelected +" query:: " + e;
-                jTextArea1.append(errString);
-                executeError = true;
-
-            } // try
+        if (!connectError && !fieldError) {
+            // Now we list the inventory for the selected table
+            jTextArea1.setText("");
+            for (Product p : products) {
+                msgString = p.getType()
+                        + ">>" + p.getId()
+                        + "::" + p.getDescription()
+                        + "::" + p.getQuantity()
+                        + "::" + p.getPrice();
+                jTextArea1.append("\n" + msgString);
+            }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
