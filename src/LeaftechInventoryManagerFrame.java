@@ -1,7 +1,16 @@
 
+import backend.direct.DirectBackend;
+import backend.interfaces.Backend;
+import backend.interfaces.Product;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 
 /******************************************************************************
  * File:NewJFrame.java
@@ -33,12 +42,22 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
 
     /** Creates new form AddInventoryMainFrame */
     public LeaftechInventoryManagerFrame() {
+        backend = new DirectBackend("localhost", "remote", "remote_pass");
+        
         initComponents();
         jLabel1.setText("LeafTech Inventory Management Application " + versionID);
-        jRadioButton1.setSelected(false);
-        jRadioButton2.setSelected(false);
-        jRadioButton3.setSelected(false);
-        jRadioButton4.setSelected(false);
+    }
+    
+    DirectBackend backend;
+    
+    ComboBoxModel<String> getProductTypeComboBoxModel() {
+        Vector<String> types = new Vector();
+
+        for (Product p : backend.getProductTypes()) {
+            types.add(p.getType());
+        }
+
+        return new DefaultComboBoxModel<>(types);
     }
 
     /** This method is called from within the constructor to
@@ -50,9 +69,6 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -68,7 +84,6 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
         jSeparator2 = new javax.swing.JSeparator();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -80,29 +95,9 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         jTextField5 = new javax.swing.JTextField();
+        productTypeComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jRadioButton1.setText("Culture Boxes");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
-            }
-        });
-
-        jRadioButton2.setText("Processing");
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
-            }
-        });
-
-        jRadioButton3.setText("Genomics");
-        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton3ActionPerformed(evt);
-            }
-        });
 
         jLabel1.setText("Leaf Tech Inventory Management System");
 
@@ -134,13 +129,6 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
-            }
-        });
-
-        jRadioButton4.setText("Reference Materials");
-        jRadioButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton4ActionPerformed(evt);
             }
         });
 
@@ -176,6 +164,8 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
             }
         });
 
+        productTypeComboBox.setModel(getProductTypeComboBoxModel());
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -188,7 +178,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel11)
                             .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -224,20 +214,9 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                                         .addComponent(jLabel6)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jRadioButton1)
-                                            .addComponent(jRadioButton2))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jRadioButton4)
-                                            .addComponent(jRadioButton3)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(83, 83, 83)
-                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 0, Short.MAX_VALUE))))
+                                .addGap(83, 83, 83)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel9)
@@ -254,7 +233,9 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel8)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(productTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -266,18 +247,11 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jRadioButton1)
-                            .addComponent(jRadioButton3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jRadioButton2)
-                            .addComponent(jRadioButton4)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel6)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addComponent(productTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(jLabel7)
                 .addGap(3, 3, 3)
@@ -325,34 +299,6 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        jRadioButton1.setSelected(true);
-        jRadioButton2.setSelected(false);
-        jRadioButton3.setSelected(false);
-        jRadioButton4.setSelected(false);
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
-
-    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
-        jRadioButton1.setSelected(false);
-        jRadioButton2.setSelected(false);
-        jRadioButton3.setSelected(true);
-        jRadioButton4.setSelected(false);
-    }//GEN-LAST:event_jRadioButton3ActionPerformed
-
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        jRadioButton1.setSelected(false);
-        jRadioButton2.setSelected(true);
-        jRadioButton3.setSelected(false);
-        jRadioButton4.setSelected(false);
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
-
-    private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
-        jRadioButton1.setSelected(false);
-        jRadioButton2.setSelected(false);
-        jRadioButton3.setSelected(false);
-        jRadioButton4.setSelected(true);
-    }//GEN-LAST:event_jRadioButton4ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
         // Add item to inventory
@@ -375,11 +321,13 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
 
         jTextArea1.setText("");
           
+        String selectedType = (String) productTypeComboBox.getSelectedItem();
+        
         // Check to make sure a radio button is selected   
-        if (!jRadioButton1.isSelected() && !jRadioButton2.isSelected() && !jRadioButton3.isSelected() && !jRadioButton4.isSelected())
+        if (selectedType == null)
         {
             fieldError = true;
-            msgString = "Must select a category radio button.";
+            msgString = "Must select a category from combo box.";
             jTextArea1.append("\n"+msgString);
         } else {
                     
@@ -475,7 +423,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 // if culture boxes are selected then insert inventory into cultureboxes 
                 // table
 
-                if (jRadioButton1.isSelected())
+                if (selectedType.equals("cultureboxes"))
                 {
                     SQLstatement = ( "INSERT INTO cultureboxes (productid, " +
                             "productdescription, productquantity, productprice) VALUES ( '" +
@@ -488,7 +436,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 // if processing equipment is selected then insert inventory into strubs
                 // table
 
-                if (jRadioButton2.isSelected())
+                if (selectedType.equals("processing"))
                 {
                     SQLstatement = ( "INSERT INTO processing (productid, " +
                             "productdescription, productquantity, productprice) VALUES ( '" +
@@ -501,7 +449,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 // if genomics are selected then insert inventory into the genomics
                 // table
 
-                if (jRadioButton3.isSelected())
+                if (selectedType.equals("genomics"))
                 {
                     SQLstatement = ( "INSERT INTO genomics (productid, " +
                             "productdescription, productquantity, productprice) VALUES ( '" +
@@ -514,7 +462,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 // if reference materials are selected then insert inventory into referencematerials
                 // table
 
-                if (jRadioButton4.isSelected())
+                if (selectedType.equals("referencematerials"))
                 {
                     SQLstatement = ( "INSERT INTO referencematerials (productid, " +
                             "productdescription, productquantity, productprice) VALUES ( '" +
@@ -561,8 +509,10 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
         String tableSelected = null;    // String used to determine which data table to use
         java.sql.Statement s = null;    // SQL statement pointer
 
+        String selectedType = (String) productTypeComboBox.getSelectedItem();
+        
         // Check to make sure a radio button is selected
-        if (jRadioButton1.isSelected() || jRadioButton2.isSelected() || jRadioButton3.isSelected() || jRadioButton4.isSelected())
+        if (selectedType != null)
         {
             fieldError = false;
             
@@ -629,25 +579,25 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 // now we build a query to list the inventory table contents
                 // for the user
                 // ... here is the SQL for culture boxes
-                if (jRadioButton1.isSelected())
+                if (selectedType.equals("cultureboxes"))
                 {
                     res = s.executeQuery( "Select * from cultureboxes" );
                     tableSelected = "CULTURE BOXES";
                 }
                 // ... here is the SQL for processing
-                if (jRadioButton2.isSelected())
+                if (selectedType.equals("processing"))
                 {
                     res = s.executeQuery( "Select * from processing" );
                     tableSelected = "PROCESSING";
                 }
                 // ... here is the SQL for genomics
-                if (jRadioButton3.isSelected())
+                if (selectedType.equals("genomics"))
                 {
                     res = s.executeQuery( "Select * from genomics" );
                     tableSelected = "GENOMICS";
                 }
                 // ... here is the SQL for genomics
-                if (jRadioButton4.isSelected())
+                if (selectedType.equals("referencematerials"))
                 {
                     res = s.executeQuery( "Select * from referencematerials" );
                     tableSelected = "REFERENCE MATERIALS";
@@ -752,6 +702,8 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 //If there is no connection error, then we form the SQL statement
                 //to delete the inventory item and then execute it.
 
+                String selectedType = (String) productTypeComboBox.getSelectedItem();
+                
                 if (!connectError )
                 {
                     try
@@ -759,25 +711,25 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                         s = DBConn.createStatement();
 
                         // if culture boxes inventory selected
-                        if (jRadioButton1.isSelected())
+                        if (selectedType.equals("cultureboxes"))
                         {
                             SQLstatement = ( "DELETE FROM cultureboxes WHERE productid = '" + productID + "';");
                         }
 
                         // if processing equipment inventory selected
-                        if (jRadioButton2.isSelected())
+                        if (selectedType.equals("processing"))
                         {
                             SQLstatement = ( "DELETE FROM processing WHERE productid = '" + productID + "';");
                         }
 
                         // if genomics inventory selected
-                        if (jRadioButton3.isSelected())
+                        if (selectedType.equals("genomics"))
                         {
                             SQLstatement = ( "DELETE FROM genomics WHERE productid = '" + productID + "';");
                         }
 
                         // if reference materials  inventory selected
-                        if (jRadioButton4.isSelected())
+                        if (selectedType.equals("referencematerials"))
                         {
                             SQLstatement = ( "DELETE FROM referencematerials WHERE productid = '" + productID + "';");
                         }
@@ -902,8 +854,10 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                     {
                         s = DBConn.createStatement();
 
+                        String selectedType = (String) productTypeComboBox.getSelectedItem();
+                        
                         // if culture boxes inventory selected
-                        if (jRadioButton1.isSelected())
+                        if (selectedType.equals("cultureboxes"))
                         {
                             SQLstatement1 = ("UPDATE cultureboxes set productquantity=(productquantity-1) where productid = '" + productID + "';");
                             SQLstatement2 = ("SELECT * from cultureboxes where productid = '" + productID + "';");
@@ -911,7 +865,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                         }
 
                         // if processing equipment inventory selected
-                        if (jRadioButton2.isSelected())
+                        if (selectedType.equals("processing"))
                         {
                             SQLstatement1 = ("UPDATE processing set productquantity=(productquantity-1) where productid = '" + productID + "';");
                             SQLstatement2 = ("SELECT * from processing where productid = '" + productID + "';");
@@ -919,7 +873,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                         }
 
                         // if genomics inventory selected
-                        if (jRadioButton3.isSelected())
+                        if (selectedType.equals("genomics"))
                         {
                             SQLstatement1 = ("UPDATE genomics set productquantity=(productquantity-1) where productid = '" + productID + "';");
                             SQLstatement2 = ("SELECT * from genomics where productid = '" + productID + "';");
@@ -927,7 +881,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                         }
 
                         // if reference materials  inventory selected
-                        if (jRadioButton4.isSelected())
+                        if (selectedType.equals("referencematerials"))
                         {
                             SQLstatement1 = ("UPDATE referencematerials set productquantity=(productquantity-1) where productid = '" + productID + "';");
                             SQLstatement2 = ("SELECT * from referencematerials where productid = '" + productID + "';");
@@ -1008,10 +962,6 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
@@ -1022,6 +972,7 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
+    private javax.swing.JComboBox<String> productTypeComboBox;
     // End of variables declaration//GEN-END:variables
 
 }

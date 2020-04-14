@@ -23,7 +23,7 @@ public class DirectBackend implements Backend {
     String user;
     String password;
     
-    DirectBackend(String host, String user, String password) {
+    public DirectBackend(String host, String user, String password) {
         this.host = host;
         this.user = user;
         this.password = password;
