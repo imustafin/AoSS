@@ -336,7 +336,7 @@ public class DirectBackend implements Backend {
                 + "last_name, address, phone, total_cost, shipped, "
                 + "ordertable) VALUES ( '" + dateTimeStamp + "', "
                 + "'" + order.getFirstName() + "', " + "'" + order.getLastName() + "', "
-                + "'" + order.getAddress() + "', " + "'" + order.getAddress() + "', "
+                + "'" + order.getAddress() + "', " + "'" + order.getPhoneNumber()+ "', "
                 + order.getTotalCost() + ", " + false + ", '" + orderTableName + "' );";
         
         con.createStatement().execute(sql);
@@ -346,12 +346,12 @@ public class DirectBackend implements Backend {
         List<String> values = new ArrayList<>();
         for (OrderProduct p : order.getProducts()) {
             values.add("('" + p.getProductId() + "', " + "'"
-              + p.getDescription() + "', " + p.getPrice() + " );");
+              + p.getDescription() + "', " + p.getPrice() + " )");
         }
         
         sql = "INSERT INTO " + orderTableName
               + " (product_id, description, item_price) "
-              + "VALUES " + String.join(", ", values);
+              + "VALUES " + String.join(", ", values) + ";";
         
         con.createStatement().execute(sql);
     }

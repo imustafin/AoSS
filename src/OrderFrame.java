@@ -458,7 +458,7 @@ public class OrderFrame extends javax.swing.JFrame {
             jTextField5.setText("");
             jTextField6.setText("$0");
         } catch (Exception e) {
-            errString = "\nProblem with inserting into table " + orderTableName
+            errString = "\nProblem with inserting into table "
                     + ":: " + e;
             jTextArea3.append(errString);
         }
