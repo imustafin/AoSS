@@ -456,16 +456,19 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
             // Now we list the inventory for the selected table
             jTextArea1.setText("");
             for (Product p : products) {
-                msgString = p.getType()
-                        + ">>" + p.getId()
-                        + "::" + p.getDescription()
-                        + "::" + p.getQuantity()
-                        + "::" + p.getPrice();
-                jTextArea1.append("\n" + msgString);
+                jTextArea1.append("\n" + productToString(p));
             }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    String productToString(Product p) {
+        return p.getType()
+                + ">>" + p.getId()
+                + "::" + p.getDescription()
+                + "::" + p.getQuantity()
+                + "::" + p.getPrice();
+    }
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         
         // This button deletes the item from the database highlighed by the user
@@ -619,98 +622,28 @@ public class LeaftechInventoryManagerFrame extends javax.swing.JFrame {
                 jTextArea1.setText("");
                 jTextArea1.append( "Deleting ProductID: " + productID );
 
-                // set up a connection to the LeafTech database
-                try
-                {                
-                    //load JDBC driver class for MySQL
-                    Class.forName( "com.mysql.jdbc.Driver" );
+                try {
+                    List<Product> ans = backend.decrementProduct(new backend.direct.Product(
+                            (String) productTypeComboBox.getSelectedItem(),
+                            productID,
+                            null,
+                            null,
+                            null
+                    ));
 
-                    //define the data source
-                    String SQLServerIP = jTextField1.getText();
-                    String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/leaftech";
+                    for (Product p : ans) {
+                        jTextArea1.append("\n" + productToString(p));
+                    }
 
-                    //create a connection to the db
-                    DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
+                    jTextArea1.append("\n\n Number of items updated: " + ans.size());
 
                 } catch (Exception e) {
 
-                    errString =  "\nProblem connecting to database:: " + e;
+                    errString = "\nProblem with delete:: " + e;
                     jTextArea1.append(errString);
-                    connectError = true;
 
-                } // end try-catch
-                
-                //If there is no connection error, then we form the SQL statement
-                //to decrement the inventory item count and then execute it.
-
-                if (!connectError )
-                {
-                    try
-                    {
-                        s = DBConn.createStatement();
-
-                        String selectedType = (String) productTypeComboBox.getSelectedItem();
-                        
-                        // if culture boxes inventory selected
-                        if (selectedType.equals("cultureboxes"))
-                        {
-                            SQLstatement1 = ("UPDATE cultureboxes set productquantity=(productquantity-1) where productid = '" + productID + "';");
-                            SQLstatement2 = ("SELECT * from cultureboxes where productid = '" + productID + "';");
-                            tableSelected = "CULTURE BOXES";
-                        }
-
-                        // if processing equipment inventory selected
-                        if (selectedType.equals("processing"))
-                        {
-                            SQLstatement1 = ("UPDATE processing set productquantity=(productquantity-1) where productid = '" + productID + "';");
-                            SQLstatement2 = ("SELECT * from processing where productid = '" + productID + "';");
-                            tableSelected = "PROCESSING";
-                        }
-
-                        // if genomics inventory selected
-                        if (selectedType.equals("genomics"))
-                        {
-                            SQLstatement1 = ("UPDATE genomics set productquantity=(productquantity-1) where productid = '" + productID + "';");
-                            SQLstatement2 = ("SELECT * from genomics where productid = '" + productID + "';");
-                            tableSelected = "GENOMICS";
-                        }
-
-                        // if reference materials  inventory selected
-                        if (selectedType.equals("referencematerials"))
-                        {
-                            SQLstatement1 = ("UPDATE referencematerials set productquantity=(productquantity-1) where productid = '" + productID + "';");
-                            SQLstatement2 = ("SELECT * from referencematerials where productid = '" + productID + "';");
-                            tableSelected = "REFERENCE MATERIALS";
-                        }
-
-                        // execute the update, then query the BD for the table entry for the item just changed
-                        // and display it for the user
-                        
-                        executeUpdateVal = s.executeUpdate(SQLstatement1);
-                        res = s.executeQuery(SQLstatement2);
-                       
-                        
-                        jTextArea1.append("\n\n" + productID + " inventory decremented...");
-                        
-                        while (res.next())
-                        {
-                            msgString = tableSelected + ">> " + res.getString(1) + " :: " + res.getString(2) +
-                            " :: "+ res.getString(3) + " :: " + res.getString(4);
-                            jTextArea1.append("\n"+msgString);
-
-                        } // while
-                        
-                        jTextArea1.append("\n\n Number of items updated: " + executeUpdateVal );
-
-                    } catch (Exception e) {
-
-                        errString =  "\nProblem with delete:: " + e;
-                        jTextArea1.append(errString);
-
-                    } // try
-               
-                } // connection check    
-                                       
+                } // try 
+     
             } else {
 
                 jTextArea1.setText("");

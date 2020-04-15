@@ -56,23 +56,15 @@ public class DirectBackend implements Backend {
         List<String> ans = new ArrayList<>();
         
         for (String[] types : PRODUCT_TYPE_ARRAYS) {
-            for (String type : types) {
-                ans.add(type);
-            }
+            ans.addAll(Arrays.asList(types));
         }
         
         return ans;
     }
     
-    List<Product> eepsProductsByType(String type) throws SQLException, ClassNotFoundException {
+    List<Product> parseEepsProducts(String type, ResultSet res) throws SQLException {
         List<Product> ans = new ArrayList<>();
         
-        Connection con = getDbConnection("inventory");
-        
-        String sql = "SELECT * FROM " + type;
-        
-        ResultSet res = con.createStatement().executeQuery(sql);
-
         while (res.next()) {
             ans.add(new backend.direct.Product(
                     type,
@@ -86,15 +78,9 @@ public class DirectBackend implements Backend {
         return ans;
     }
     
-    List<Product> leaftechProductsByType(String type) throws SQLException, SQLException, ClassNotFoundException {
+    List<Product> parseLeaftechProducts(String type, ResultSet res) throws SQLException {
         List<Product> ans = new ArrayList<>();
-        
-        Connection con = getDbConnection("leaftech");
-        
-        String sql = "SELECT * FROM " + type;
-        
-        ResultSet res = con.createStatement().executeQuery(sql);
-        
+
         while (res.next()) {
             ans.add(new backend.direct.Product(
                     type,
@@ -104,8 +90,24 @@ public class DirectBackend implements Backend {
                     res.getFloat("productprice")
             ));
         }
-        
+
         return ans;
+    }
+    
+    List<Product> eepsProductsByType(String type) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("inventory");
+        
+        String sql = "SELECT * FROM " + type;
+        
+        return parseEepsProducts(type, con.createStatement().executeQuery(sql));
+    }
+    
+    List<Product> leaftechProductsByType(String type) throws SQLException, SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("leaftech");
+        
+        String sql = "SELECT * FROM " + type;
+        
+        return parseLeaftechProducts(type, con.createStatement().executeQuery(sql));
     }
     
     boolean isEepsType(String type) {
@@ -204,5 +206,48 @@ public class DirectBackend implements Backend {
         }
         
         return null;
+    }
+
+    List<Product> decrementEepsProduct(Product product) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("inventory");
+        
+        String sql = "UPDATE " + product.getType()
+                + " SET quantity=(quantity - 1) "
+                + "WHERE product_code = '" + product.getId() + "';";
+        
+        con.createStatement().execute(sql);
+        
+        sql = "SELECT * FROM " + product.getType()
+                + " WHERE product_code='" + product.getId() + "';";
+        
+        return parseEepsProducts(product.getType(), con.createStatement().executeQuery(sql));
+    }
+    
+    List<Product> decrementLeaftechProduct(Product product) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("leaftech");
+        
+        String sql = "UPDATE " + product.getType()
+                + " SET productquantity=(productquantity - 1) "
+                + "WHERE productid='" + product.getId() + "';";
+        
+        con.createStatement().execute(sql);
+        
+        sql = "SELECT * FROM " + product.getType()
+                + " WHERE productid='" + product.getId() + "';";
+        
+        return parseLeaftechProducts(product.getType(), con.createStatement().executeQuery(sql));
+    }
+    
+    @Override
+    public List<Product> decrementProduct(Product product) throws SQLException, ClassNotFoundException {
+        if (isEepsType(product.getType())) {
+            return decrementEepsProduct(product);
+        } else {
+            if (isLeaftechType(product.getType())) {
+                return decrementLeaftechProduct(product);
+            }
+        }
+        
+        return new ArrayList<>();
     }
 }

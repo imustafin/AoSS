@@ -41,11 +41,20 @@ public interface Backend {
     void addProduct(Product product) throws Exception;
     
     /**
-     * Delete product by type and id
+     * Delete products by type and id
      * 
      * @param product what to delete with type and id
      * @return how many records were deleted
      * @throws Exception specific exceptions depend on implementation
      */
     Integer deleteProduct(Product product) throws Exception;
+    
+    /**
+     * Decrement count of products by type and id
+     * 
+     * @param product where to decrement delete with type and id
+     * @return updated products affected by decrement
+     * @throws Exception specific exceptions depend on implementation
+     */
+    List<Product> decrementProduct(Product product) throws Exception;
 }
