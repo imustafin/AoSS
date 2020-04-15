@@ -357,7 +357,7 @@ public class DirectBackend implements Backend {
     }
 
     @Override
-    public void setShipped(Order order) throws Exception {
+    public void setShipped(Order order) throws SQLException, ClassNotFoundException {
         Connection con = getDbConnection("orderinfo");
         
         String sql = "UPDATE orders SET shipped=" + true + " WHERE order_id=" + order.getId();

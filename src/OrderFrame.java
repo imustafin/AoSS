@@ -1,11 +1,9 @@
 
 import backend.direct.DirectBackend;
-import backend.interfaces.Backend;
 import backend.interfaces.OrderProduct;
 import backend.interfaces.Product;
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -19,7 +17,7 @@ import javax.swing.DefaultComboBoxModel;
 *	1.0 November 2009 - Initial rewrite of original assignment 2 (ajl).
 *
 * This class defines a GUI application that allows EEP order takers to enter
-* phone orders into the database. 
+* phone orders into the database.
 *
 ******************************************************************************/
 
@@ -32,7 +30,7 @@ public class OrderFrame extends javax.swing.JFrame {
     String versionID = "v2.10.11";
 
     final DirectBackend backend;
-    
+
     /** Creates new form NewJFrame */
     public OrderFrame() {
         backend = new DirectBackend("localhost", "remote", "remote_pass");
@@ -297,7 +295,7 @@ public class OrderFrame extends javax.swing.JFrame {
 
         return new DefaultComboBoxModel<>(typeArray);
     }
-    
+
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // This button gets the selected line of text from the
         // inventory list window jTextArea1. The line of text is parsed and
@@ -308,16 +306,10 @@ public class OrderFrame extends javax.swing.JFrame {
         Float fCost;                        // Item cost
         String productDescription = null;   // Product description
         String productID = null;            // Product ID pnemonic
-        String sCost,sTotalCost;            // String order and total cost values
-        Boolean IndexNotFound;              // Flag indicating a string index was not found.
+        String sCost = null, sTotalCost;            // String order and total cost values
+        Boolean IndexNotFound = false;              // Flag indicating a string index was not found.
+        String inventorySelection;
 
-        // Initialization
-        
-        String inventorySelection = null;
-        IndexNotFound = false;
-        sCost = null;
-        sTotalCost = null;
-        
         // this is the selected line of text
         inventorySelection =  jTextArea1.getSelectedText();
 
@@ -332,7 +324,7 @@ public class OrderFrame extends javax.swing.JFrame {
             } else {
                 productID = inventorySelection.substring(beginIndex,endIndex);
             }
-    
+
             if ( !IndexNotFound )
             {
                 // get the product description
@@ -342,9 +334,9 @@ public class OrderFrame extends javax.swing.JFrame {
                     IndexNotFound = true;
                 } else {
                     productDescription = inventorySelection.substring(beginIndex,endIndex);
-                }              
+                }
             }
-            
+
             // get the string cost value
             if ( !IndexNotFound )
             {
@@ -356,9 +348,9 @@ public class OrderFrame extends javax.swing.JFrame {
                     sCost = inventorySelection.substring(beginIndex,endIndex);
                 }
             }
-            
+
             // write the string to the order area
-            
+
             if ( !IndexNotFound )
             {
                 jTextArea2.append( productID + " : " + productDescription + " : $"
@@ -374,12 +366,12 @@ public class OrderFrame extends javax.swing.JFrame {
                 sTotalCost = sTotalCost.substring(beginIndex, sTotalCost.length());
                 fCost = Float.parseFloat(sTotalCost) + Float.parseFloat(sCost);
                 jTextField6.setText( "$" + fCost.toString());
-                
+
             } else {
-                jTextArea3.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");      
+                jTextArea3.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");
             }
         } else {
-            jTextArea3.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)"); 
+            jTextArea3.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");
         } // Blank string check
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -395,38 +387,30 @@ public class OrderFrame extends javax.swing.JFrame {
         // database as well.
 
         int beginIndex;                 // String parsing index
-        Boolean connectError = false;   // Error flag
         String customerAddress;         // Buyers mailing address
         int endIndex;                   // String paring index
-        String firstName = null;        // Customer's first name
-        Connection DBConn = null;       // MySQL connection handle
+        String firstName;        // Customer's first name
         float fCost;                    // Total order cost
         String description;             // Tree, seed, or shrub description
-        Boolean executeError = false;   // Error flag
-        String errString = null;        // String for displaying errors
-        int executeUpdateVal;           // Return value from execute indicating effected rows
-        String lastName = null;         // Customer's last name
-        String msgString = null;        // String for displaying non-error messages
+        String errString;        // String for displaying errors
+        String lastName;         // Customer's last name
+        String msgString;        // String for displaying non-error messages
         String orderTableName = null;   // This is the name of the table that lists the items
-        String sTotalCost = null;       // String representing total order cost
-        String sPerUnitCost = null;     // String representation of per unit cost
-        String orderItem = null;        // Order line item from jTextArea2
-        String phoneNumber = null;      // Customer phone number
+        String sTotalCost;       // String representing total order cost
+        String sPerUnitCost;     // String representation of per unit cost
+        String orderItem;        // Order line item from jTextArea2
+        String phoneNumber;      // Customer phone number
         Float perUnitCost;              // Cost per tree, seed, or shrub unit
-        String productID = null;        // Product id of tree, seed, or shrub
-        Statement s = null;             // SQL statement pointer
-        String SQLstatement = null;     // String for building SQL queries
+        String productID;        // Product id of tree, seed, or shrub
 
         // Check to make sure there is a first name, last name, address and phone
         if ((jTextField3.getText().length() > 0) && (jTextField4.getText().length() > 0)
                 && (jTextField5.getText().length() > 0)
                 && (jTextArea4.getText().length() > 0)) {
         } else {
-
             errString = "\nMissing customer information!!!\n";
             jTextArea3.append(errString);
-            connectError = true;
-
+            return;
         }// customer data check
 
         //If there is not a connection error, then we form the SQL statement
@@ -442,69 +426,56 @@ public class OrderFrame extends javax.swing.JFrame {
         sTotalCost = sTotalCost.substring(beginIndex, sTotalCost.length());
         fCost = Float.parseFloat(sTotalCost);
 
-        // Now, if there is no connect or SQL execution errors at this point, 
-        // then we have an order added to the orderinfo::orders table, and a 
-        // new ordersXXXX table created. Here we insert the list of items in
-        // jTextArea2 into the ordersXXXX table.
-        if (!connectError && !executeError) {
-            // Now we create a table that contains the itemized list
-            // of stuff that is associated with the order
+        String[] items = jTextArea2.getText().split("\\n");
 
-            String[] items = jTextArea2.getText().split("\\n");
-            
-            List<OrderProduct> products = new ArrayList<>();
+        List<OrderProduct> products = new ArrayList<>();
 
-            for (int i = 0; i < items.length; i++) {
-                orderItem = items[i];
-                jTextArea3.append("\nitem #:" + i + ": " + items[i]);
+        for (int i = 0; i < items.length; i++) {
+            orderItem = items[i];
+            jTextArea3.append("\nitem #:" + i + ": " + items[i]);
 
+            // Check just to make sure that a blank line was not stuck in
+            // there... just in case.
+            if (orderItem.length() > 0) {
+                // Parse out the product id
+                beginIndex = 0;
+                endIndex = orderItem.indexOf(" : ", beginIndex);
+                productID = orderItem.substring(beginIndex, endIndex);
 
-                // Check just to make sure that a blank line was not stuck in
-                // there... just in case.
-                if (orderItem.length() > 0) {
-                    // Parse out the product id
-                    beginIndex = 0;
-                    endIndex = orderItem.indexOf(" : ", beginIndex);
-                    productID = orderItem.substring(beginIndex, endIndex);
+                // Parse out the description text
+                beginIndex = endIndex + 3; //skip over " : "
+                endIndex = orderItem.indexOf(" : ", beginIndex);
+                description = orderItem.substring(beginIndex, endIndex);
 
-                    // Parse out the description text
-                    beginIndex = endIndex + 3; //skip over " : "
-                    endIndex = orderItem.indexOf(" : ", beginIndex);
-                    description = orderItem.substring(beginIndex, endIndex);
+                // Parse out the item cost
+                beginIndex = endIndex + 4; //skip over " : $"
+                //endIndex = orderItem.indexOf(" : ",orderItem.length());
+                //sPerUnitCost = orderItem.substring(beginIndex,endIndex);
+                sPerUnitCost = orderItem.substring(beginIndex, orderItem.length());
+                perUnitCost = Float.parseFloat(sPerUnitCost);
 
-                    // Parse out the item cost
-                    beginIndex = endIndex + 4; //skip over " : $"
-                    //endIndex = orderItem.indexOf(" : ",orderItem.length());
-                    //sPerUnitCost = orderItem.substring(beginIndex,endIndex);
-                    sPerUnitCost = orderItem.substring(beginIndex, orderItem.length());
-                    perUnitCost = Float.parseFloat(sPerUnitCost);
-
-                    products.add(new backend.direct.OrderProduct(null, productID, description, perUnitCost));
-                }
+                products.add(new backend.direct.OrderProduct(null, productID, description, perUnitCost));
             }
+        }
 
-            try {
-                backend.addOrder(new backend.direct.Order(null, firstName, lastName, phoneNumber, customerAddress, fCost, false, null, products));
-                msgString = "\nORDER SUBMITTED FOR: " + firstName + " " + lastName;
-                jTextArea3.setText(msgString);
+        try {
+            backend.addOrder(new backend.direct.Order(null, firstName, lastName, phoneNumber, customerAddress, fCost, false, null, products));
+            msgString = "\nORDER SUBMITTED FOR: " + firstName + " " + lastName;
+            jTextArea3.setText(msgString);
 
-                // Clean up the display
-                jTextArea1.setText("");
-                jTextArea2.setText("");
-                jTextArea4.setText("");
-                jTextField3.setText("");
-                jTextField4.setText("");
-                jTextField5.setText("");
-                jTextField6.setText("$0");
-
-            } catch (Exception e) {
-
-                errString = "\nProblem with inserting into table " + orderTableName
-                        + ":: " + e;
-                jTextArea3.append(errString);
-
-            } // try
-        } //for each line of text in order table
+            // Clean up the display
+            jTextArea1.setText("");
+            jTextArea2.setText("");
+            jTextArea4.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+            jTextField6.setText("$0");
+        } catch (Exception e) {
+            errString = "\nProblem with inserting into table " + orderTableName
+                    + ":: " + e;
+            jTextArea3.append(errString);
+        }
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
@@ -520,50 +491,26 @@ public class OrderFrame extends javax.swing.JFrame {
         // getting the required inventory. Once retieved, the inventory is
         // displayed in jTextArea1. From here the user can select an inventory
         // item by triple clicking the item.
+        String errString;            // String for displaying errors
+        String msgString;            // String for displaying non-error messages
 
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
-        String errString = null;            // String for displaying errors
-        String msgString = null;            // String for displaying non-error messages
-        ResultSet res = null;               // SQL query result set pointer
-        Statement s = null;                 // SQL statement pointer
+        try {
+            List<Product> ans = backend.getProductsByType(
+                    (String) productTypeComboBox.getSelectedItem());
 
-        if ( !connectError )
-        {
-            try
-            {
-                List<Product> ans = backend.getProductsByType((String) productTypeComboBox.getSelectedItem());
-                
-                //Display the data in the textarea
+            //Display the data in the textarea
+            jTextArea1.setText("");
 
-                jTextArea1.setText("");
-
-                for (Product p : ans) {
-                    msgString = p.getId() + " : " + p.getDescription() + 
-                            " : $" + p.getPrice() + " : " + p.getQuantity();
-                    jTextArea1.append(msgString + "\n");
-                }
-
-            } catch (Exception e) {
-
-                errString =  "\nProblem getting inventory:: " + e;
-                jTextArea1.append(errString);
-
-            } // end try-catch
-        } // if connect check
-    }//GEN-LAST:event_productTypeComboBoxActionPerformed
-
-    /**
-    * @param args the command line arguments
-    */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new OrderFrame().setVisible(true);
+            for (Product p : ans) {
+                msgString = p.getId() + " : " + p.getDescription()
+                        + " : $" + p.getPrice() + " : " + p.getQuantity();
+                jTextArea1.append(msgString + "\n");
             }
-        });
-    }
-
+        } catch (ClassNotFoundException | SQLException e) {
+            errString = "\nProblem getting inventory:: " + e;
+            jTextArea1.append(errString);
+        } // end try-catch
+    }//GEN-LAST:event_productTypeComboBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
