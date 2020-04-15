@@ -1,18 +1,10 @@
 
 import backend.direct.DirectBackend;
-import backend.interfaces.Backend;
 import backend.interfaces.Product;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.util.Arrays;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.event.ListSelectionEvent;
 
 /******************************************************************************
  * File:NewJFrame.java
@@ -22,8 +14,8 @@ import javax.swing.event.ListSelectionEvent;
  * Versions:
  *	1.0 January 2014 - Modification to assignment 2 (ajl).
  *
- * This class defines a GUI application that allows inventory to be added, 
- * deleted, and inventory counts to be decremented from theleaftech database. 
+ * This class defines a GUI application that allows inventory to be added,
+ * deleted, and inventory counts to be decremented from theleaftech database.
  * There are four tables in the leaftech database: cultureboxes,
  * genomics, processing, and referencematerials.
  *
@@ -40,26 +32,26 @@ import javax.swing.event.ListSelectionEvent;
  */
 public class InventoryFrame extends javax.swing.JFrame {
 
-       String versionID = "V1.1";
+    String versionID = "v2.10.11";
 
     /** Creates new form AddInventoryMainFrame */
     public InventoryFrame() {
         backend = new DirectBackend("localhost", "remote", "remote_pass");
-        
+
         initComponents();
-        jLabel1.setText("LeafTech Inventory Management Application " + versionID);
+        jLabel1.setText("Inventory Management Application " + versionID);
     }
-    
+
     DirectBackend backend;
-    
+
     ComboBoxModel<String> getProductTypeComboBoxModel() {
         List<String> typeList = backend.getProductTypes();
         String[] typeArray = new String[typeList.size()];
-        
+
         for (int i = 0; i < typeArray.length; i++) {
             typeArray[i] = typeList.get(i);
         }
-        
+
         return new DefaultComboBoxModel<>(typeArray);
     }
 
@@ -302,45 +294,36 @@ public class InventoryFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
         // Add item to inventory
 
-        Boolean connectError = false;   // Error flag
-        Connection DBConn = null;       // MySQL connection handle
         String description;             // Inventory item description
-        Boolean executeError = false;   // Error flag
-        String errString = null;        // String for displaying errors
-        int executeUpdateVal;           // Return value from execute indicating effected rows
+        String errString;        // String for displaying errors
         Boolean fieldError = false;     // Error flag
-        String msgString = null;        // String for displaying non-error messages
-        ResultSet res = null;           // SQL query result set pointer
-        String tableSelected = null;    // String used to determine which data table to use
+        String msgString;        // String for displaying non-error messages
         Integer quantity;               // Quantity of inventory item
         Float perUnitCost;              // Cost per unit item
-        String productID = null;        // Product id of item
-        java.sql.Statement s = null;    // SQL statement pointer
-        String SQLstatement = null;     // String for building SQL queries
+        String productID;        // Product id of item
 
         jTextArea1.setText("");
-          
+
         String selectedType = (String) productTypeComboBox.getSelectedItem();
-        
-        // Check to make sure a radio button is selected   
+
+        // Check to make sure a radio button is selected
         if (selectedType == null)
         {
             fieldError = true;
             msgString = "Must select a category from combo box.";
             jTextArea1.append("\n"+msgString);
         } else {
-                    
-            //Make sure there is a product description           
+
+            //Make sure there is a product description
             if ( jTextField5.getText().length() == 0 )
             {
                 fieldError = true;
                 msgString = "Must enter a product description.";
                 jTextArea1.append("\n"+msgString);
             } else {
-                        
+
                 //Make sure there is a product ID
                 if ( jTextField2.getText().length() == 0 )
                 {
@@ -348,7 +331,7 @@ public class InventoryFrame extends javax.swing.JFrame {
                     msgString = "Must enter a product ID.";
                     jTextArea1.append("\n"+msgString);
                 } else {
-                
+
                     //Make sure there is a price
                     if ( jTextField3.getText().length() == 0 )
                     {
@@ -369,7 +352,7 @@ public class InventoryFrame extends javax.swing.JFrame {
             }
         } // button
 
-        if (!connectError && !fieldError )
+        if (!fieldError )
         {
             try
             {
@@ -378,7 +361,7 @@ public class InventoryFrame extends javax.swing.JFrame {
                 productID = jTextField2.getText();
                 quantity = Integer.parseInt(jTextField4.getText());
                 perUnitCost = Float.parseFloat(jTextField3.getText());
-                
+
                 backend.addProduct(new backend.direct.Product(
                         selectedType,
                         productID,
@@ -388,48 +371,36 @@ public class InventoryFrame extends javax.swing.JFrame {
                 ));
 
                 // let the user know all went well
-                
+
                 jTextArea1.setText("");
                 jTextArea1.append("\nINVENTORY UPDATED... The following was added...\n");
                 jTextArea1.append("\n DESCRIPTION:: " + description );
                 jTextArea1.append("\n QUANTITITY::  " + quantity );
                 jTextArea1.append("\n UNIT COST::   " + perUnitCost );
-
-            } catch (Exception e) {
-
+            } catch (ClassNotFoundException | NumberFormatException | SQLException e) {
                 errString =  "\nProblem with insert:: " + e;
                 jTextArea1.append(errString);
-                executeError = true;
-
             } // try
-
         } //execute SQL check
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // This button will list the inventory for the product selected
 
-        Boolean connectError = false;   // Error flag
         String errString = null;        // String for displaying errors
         Boolean fieldError = true;      // Error flag
         String msgString = null;        // String for displaying non-error messages
-        
-        List<Product> products = null;
 
         String selectedType = (String) productTypeComboBox.getSelectedItem();
-        
+
         // Check to make sure a radio button is selected
         if (selectedType != null)
         {
             fieldError = false;
-            
         } else {
-
             msgString = "Must select a category radio button.";
             jTextArea1.setText("\n"+msgString);
         }
-
 
         //Now, we try to connect to the inventory database.
         if (!fieldError)
@@ -441,21 +412,17 @@ public class InventoryFrame extends javax.swing.JFrame {
             jTextField5.setText("");
             jTextArea1.setText("");
 
-            try
-            {
-                products = backend.getProductsByType(selectedType);
-            } catch (Exception e) {
-                errString =  "\nProblem getting products:: " + e;
-                jTextArea1.append(errString);
-                connectError = true;
-            } // end try-catch
-        } // fielderror check - make sure a product is selected
+            try {
+                List<Product> products = backend.getProductsByType(selectedType);
 
-        if (!connectError && !fieldError) {
-            // Now we list the inventory for the selected table
-            jTextArea1.setText("");
-            for (Product p : products) {
-                jTextArea1.append("\n" + productToString(p));
+                jTextArea1.setText("");
+                for (Product p : products) {
+                    jTextArea1.append("\n" + productToString(p));
+                }
+
+            } catch (ClassNotFoundException | SQLException e) {
+                errString = "\nProblem getting products:: " + e;
+                jTextArea1.append(errString);
             }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -467,124 +434,87 @@ public class InventoryFrame extends javax.swing.JFrame {
                 + "::" + p.getQuantity()
                 + "::" + p.getPrice();
     }
-    
+
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        
         // This button deletes the item from the database highlighed by the user
-        
         int beginIndex;                     // Parsing index
         int endIndex;                       // Parsing index
         String productID = null;            // Product ID pnemonic
         Boolean IndexNotFound;              // Flag indicating a string index was not found.
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
-        String errString = null;            // String for displaying errors
-        int executeUpdateVal;               // Return value from execute indicating effected rows
-        String msgString = null;            // String for displaying non-error messages
-        String tableSelected = null;        // String used to determine which data table to use
-        java.sql.Statement s = null;        // SQL statement pointer
-        String SQLstatement = null;         // String for building SQL queries
-        String inventorySelection = null;   // Inventory text string selected by user
+        String errString;            // String for displaying errors
+        String inventorySelection;   // Inventory text string selected by user
         IndexNotFound = false;              // Flag indicating that a string index was not found
-        
+
         // this is the selected line of text
-        inventorySelection =  jTextArea1.getSelectedText();
+        inventorySelection = jTextArea1.getSelectedText();
 
         // make sure the selection is not blank
-        if ( inventorySelection != null )
-        {
+        if (inventorySelection != null) {
             // get the product ID - here we get the leading index
             beginIndex = 0;
-            endIndex = inventorySelection.indexOf(">>",beginIndex);
+            endIndex = inventorySelection.indexOf(">>", beginIndex);
 
-            if (endIndex < 0 ) {
+            if (endIndex < 0) {
                 IndexNotFound = true;
             } else {
-                beginIndex = endIndex+2; //skip past ">>"                                
+                beginIndex = endIndex + 2; //skip past ">>"
             }
-            
-            if ( !IndexNotFound )
-            {
-                // Here we get the trailing index and parse out the productID
-                endIndex = inventorySelection.indexOf(":",beginIndex);
 
-                if (endIndex < 0 ) {
+            if (!IndexNotFound) {
+                // Here we get the trailing index and parse out the productID
+                endIndex = inventorySelection.indexOf(":", beginIndex);
+
+                if (endIndex < 0) {
                     IndexNotFound = true;
                 } else {
-                    productID = inventorySelection.substring(beginIndex,endIndex);
-                }              
+                    productID = inventorySelection.substring(beginIndex, endIndex);
+                }
             }
-           
+
             // Now we delete the inventory item indicated by the productID we
             // parsed out above from the indicated table.
-            
-            if ( !IndexNotFound )
-            {
+            if (!IndexNotFound) {
                 jTextArea1.setText("");
-                jTextArea1.append( "Deleting ProductID: " + productID );
+                jTextArea1.append("Deleting ProductID: " + productID);
 
                 String selectedType = (String) productTypeComboBox.getSelectedItem();
-                
-                if (!connectError )
-                {
-                    try
-                    {
-                        executeUpdateVal = backend.deleteProduct(new backend.direct.Product(
-                                selectedType,
-                                productID,
-                                null,
-                                null,
-                                null));
-                        // let the user know all went well
-                        
-                        jTextArea1.append("\n\n" + productID + " deleted...");
-                        jTextArea1.append("\n Number of items deleted: " + executeUpdateVal );
+                try {
+                    int productsDeleted = backend.deleteProduct(new backend.direct.Product(
+                            selectedType,
+                            productID,
+                            null,
+                            null,
+                            null));
+                    // let the user know all went well
 
+                    jTextArea1.append("\n\n" + productID + " deleted...");
+                    jTextArea1.append("\n Number of items deleted: " + productsDeleted);
 
-                    } catch (Exception e) {
-
-                        errString =  "\nProblem with delete:: " + e;
-                        jTextArea1.append(errString);
-
-                    } // try
-               
-                } // connection check    
-                                       
+                } catch (ClassNotFoundException | SQLException e) {
+                    errString = "\nProblem with delete:: " + e;
+                    jTextArea1.append(errString);
+                } // try
             } else {
-
                 jTextArea1.setText("");
-                jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");      
-
+                jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");
             }
         } else {
-
             jTextArea1.setText("");
-            jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)"); 
-
+            jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");
         } // Blank string check
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
- 
         // This button decrements the inventory count in the database of the item highlighed by the user
-        
+
         int beginIndex;                     // Parsing index
         int endIndex;                       // Parsing index
         String productID = null;            // Product ID pnemonic
         Boolean IndexNotFound;              // Flag indicating a string index was not found.
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
         String errString = null;            // String for displaying errors
-        int executeUpdateVal;               // Return value from execute indicating effected rows
-        String msgString = null;            // String for displaying non-error messages
-        ResultSet res = null;               // SQL query result set pointer
-        String tableSelected = null;        // String used to determine which data table to use
-        java.sql.Statement s = null;        // SQL statement pointer
-        String SQLstatement1 = null;        // String for building SQL queries
-        String SQLstatement2 = null;        // String for building SQL queries
         String inventorySelection = null;   // Inventory text string selected by user
         IndexNotFound = false;              // Flag indicating that a string index was not found
-        
+
         // this is the selected line of text
         inventorySelection =  jTextArea1.getSelectedText();
 
@@ -598,9 +528,9 @@ public class InventoryFrame extends javax.swing.JFrame {
             if (endIndex < 0 ) {
                 IndexNotFound = true;
             } else {
-                beginIndex = endIndex+2; //skip past ">>"                                
+                beginIndex = endIndex+2; //skip past ">>"
             }
-            
+
             if ( !IndexNotFound )
             {
                 // Here we get the trailing index and parse out the productID
@@ -610,12 +540,12 @@ public class InventoryFrame extends javax.swing.JFrame {
                     IndexNotFound = true;
                 } else {
                     productID = inventorySelection.substring(beginIndex,endIndex);
-                }              
+                }
             }
-           
+
             // Now we decrement the inventory count of item indicated by the productID we
             // parsed out above from the indicated table.
-            
+
             if ( !IndexNotFound )
             {
                 jTextArea1.setText("");
@@ -636,23 +566,23 @@ public class InventoryFrame extends javax.swing.JFrame {
 
                     jTextArea1.append("\n\n Number of items updated: " + ans.size());
 
-                } catch (Exception e) {
+                } catch (ClassNotFoundException | SQLException e) {
 
                     errString = "\nProblem with delete:: " + e;
                     jTextArea1.append(errString);
 
-                } // try 
-     
+                } // try
+
             } else {
 
                 jTextArea1.setText("");
-                jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");      
+                jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");
 
             }
         } else {
 
             jTextArea1.setText("");
-            jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)"); 
+            jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");
 
         } // Blank string check
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -660,18 +590,6 @@ public class InventoryFrame extends javax.swing.JFrame {
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
-
-    /**
-    * @param args the command line arguments
-    */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new InventoryFrame().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

@@ -29,7 +29,7 @@ import javax.swing.DefaultComboBoxModel;
  */
 public class OrderFrame extends javax.swing.JFrame {
 
-    String versionID = "v2.10.10";
+    String versionID = "v2.10.11";
 
     final DirectBackend backend;
     

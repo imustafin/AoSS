@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class ShippingFrame extends javax.swing.JFrame {
     Integer updateOrderID;
-    String versionID = "v2.10.10";
+    String versionID = "v2.10.11";
     
     DirectBackend backend;
     
