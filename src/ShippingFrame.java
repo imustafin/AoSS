@@ -22,14 +22,14 @@ import java.util.List;
  *
  * @author lattanze
  */
-public class ShippingAppFrame extends javax.swing.JFrame {
+public class ShippingFrame extends javax.swing.JFrame {
     Integer updateOrderID;
     String versionID = "v2.10.10";
     
     DirectBackend backend;
     
     /** Creates new form NewJFrame */
-    public ShippingAppFrame() {
+    public ShippingFrame() {
         backend = new DirectBackend("localhost", "remote", "remote_pass");
         
         initComponents();
@@ -537,7 +537,7 @@ public class ShippingAppFrame extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ShippingAppFrame().setVisible(true);
+                new ShippingFrame().setVisible(true);
             }
         });
     }

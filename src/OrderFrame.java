@@ -27,14 +27,14 @@ import javax.swing.DefaultComboBoxModel;
  *
  * @author lattanze
  */
-public class OrderApp extends javax.swing.JFrame {
+public class OrderFrame extends javax.swing.JFrame {
 
     String versionID = "v2.10.10";
 
     final DirectBackend backend;
     
     /** Creates new form NewJFrame */
-    public OrderApp() {
+    public OrderFrame() {
         backend = new DirectBackend("localhost", "remote", "remote_pass");
         initComponents();
         jLabel1.setText("Order Management Application " + versionID);
@@ -559,7 +559,7 @@ public class OrderApp extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OrderApp().setVisible(true);
+                new OrderFrame().setVisible(true);
             }
         });
     }
