@@ -58,8 +58,16 @@ public interface Backend {
      */
     List<Product> decrementProduct(Product product) throws Exception;
     
+    /**
+     * @param order which order to save
+     * @throws Exception specific exceptions depend on implementation
+     */
     void addOrder(Order order) throws Exception;
     
+    /**
+     * @param order which order to set as shipped
+     * @throws Exception specific exceptions depend on implementation
+     */
     void setShipped(Order order) throws Exception;
     
 }
