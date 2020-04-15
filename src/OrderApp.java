@@ -1,6 +1,12 @@
 
+import backend.direct.DirectBackend;
+import backend.interfaces.Backend;
+import backend.interfaces.Product;
 import java.sql.*;
 import java.util.Calendar;
+import java.util.List;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 
 /******************************************************************************
 * File:NewJFrame.java
@@ -23,8 +29,11 @@ public class OrderApp extends javax.swing.JFrame {
 
     String versionID = "v2.10.10";
 
+    final DirectBackend backend;
+    
     /** Creates new form NewJFrame */
     public OrderApp() {
+        backend = new DirectBackend("localhost", "remote", "remote_pass");
         initComponents();
         jLabel1.setText("Order Management Application " + versionID);
     }
@@ -41,9 +50,6 @@ public class OrderApp extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
@@ -69,6 +75,7 @@ public class OrderApp extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         jTextArea4 = new javax.swing.JTextArea();
         jLabel13 = new javax.swing.JLabel();
+        productTypeComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -78,27 +85,6 @@ public class OrderApp extends javax.swing.JFrame {
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
-
-        jButton1.setText("Trees");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Seeds");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        jButton3.setText("Shrubs");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
 
         jLabel4.setText("Press Button For Inventory Display");
 
@@ -171,6 +157,13 @@ public class OrderApp extends javax.swing.JFrame {
 
         jLabel13.setText("SELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER (TRIPLE CLICK)");
 
+        productTypeComboBox.setModel(getProductTypeComboBoxModel());
+        productTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                productTypeComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -202,16 +195,9 @@ public class OrderApp extends javax.swing.JFrame {
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                     .addComponent(jLabel4)
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(jButton1)
-                                                        .addGap(161, 161, 161)
-                                                        .addComponent(jButton2)))
-                                                .addGap(166, 166, 166)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jButton3)
-                                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
-                                                        .addComponent(jLabel11))))
+                                                    .addComponent(productTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 329, Short.MAX_VALUE)
+                                                .addComponent(jLabel11))
                                             .addComponent(jScrollPane2)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGap(10, 10, 10)
@@ -249,14 +235,10 @@ public class OrderApp extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(7, 7, 7)
-                        .addComponent(jLabel3))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton1)
-                        .addComponent(jButton2)
-                        .addComponent(jButton3)))
+                .addGap(2, 2, 2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(productTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel13)
                 .addGap(3, 3, 3)
@@ -297,93 +279,23 @@ public class OrderApp extends javax.swing.JFrame {
                         .addComponent(jLabel2)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(142, Short.MAX_VALUE))
+                .addContainerGap(141, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-        // jButton1 is responsible for querying the inventory database and
-        // getting the tree inventory. Once retieved, the tree inventory is
-        // displayed in jTextArea1. From here the user can select an inventory
-        // item by triple clicking the item.
+    ComboBoxModel<String> getProductTypeComboBoxModel() {
+        List<String> typeList = backend.getProductTypes();
+        String[] typeArray = new String[typeList.size()];
 
-        // Database parameters
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
-        String errString = null;            // String for displaying errors
-        String msgString = null;            // String for displaying non-error messages
-        ResultSet res = null;               // SQL query result set pointer
-        Statement s = null;                 // SQL statement pointer
+        for (int i = 0; i < typeArray.length; i++) {
+            typeArray[i] = typeList.get(i);
+        }
 
-        // Connect to the inventory database
-        try
-        {
-            msgString = ">> Establishing Driver...";
-            jTextArea1.setText("\n"+msgString);
-
-            //Load J Connector for MySQL - explicit loads are not needed for 
-            //connectors that are version 4 and better
-            //Class.forName( "com.mysql.jdbc.Driver" );
-
-            msgString = ">> Setting up URL...";
-            jTextArea1.append("\n"+msgString);
-
-            //define the data source
-            String SQLServerIP = jTextField1.getText();
-            String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/inventory";
-
-            msgString = ">> Establishing connection with: " + sourceURL + "...";
-            jTextArea1.append("\n"+msgString);
-
-            //create a connection to the db - note the default account is "remote"
-            //and the password is "remote_pass" - you will have to set this
-            //account up in your database
-
-            DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
-        } catch (Exception e) {
-
-            errString =  "\nProblem connecting to database:: " + e;
-            jTextArea1.append(errString);
-            connectError = true;
-
-        } // end try-catch
-
-        // If we are connected, then we get the list of trees from the
-        // inventory database
-        
-        if ( !connectError )
-        {
-            try
-            {
-                s = DBConn.createStatement();
-                res = s.executeQuery( "Select * from trees" );
-
-                //Display the data in the textarea
-                
-                jTextArea1.setText("");
-
-                while (res.next())
-                {
-                    msgString = res.getString(1) + " : " + res.getString(2) +
-                            " : $"+ res.getString(4) + " : " + res.getString(3)
-                            + " units in stock";
-                    jTextArea1.append(msgString+"\n");
-
-                } // while
-                
-            } catch (Exception e) {
-
-                errString =  "\nProblem getting tree inventory:: " + e;
-                jTextArea1.append(errString);
-
-            } // end try-catch
-        } // if connect check
-    }//GEN-LAST:event_jButton1ActionPerformed
-
+        return new DefaultComboBoxModel<>(typeArray);
+    }
+    
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // This button gets the selected line of text from the
         // inventory list window jTextArea1. The line of text is parsed and
@@ -713,165 +625,47 @@ public class OrderApp extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField4ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // jButton2 is responsible for querying the inventory database and
-        // getting the seed inventory. Once retieved, the seed inventory is
-        // displayed in jTextArea1. From here the user can select an inventory
-        // item by triple clicking the item.
-
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
-        String errString = null;            // String for displaying errors
-        String msgString = null;            // String for displaying non-error messages
-        ResultSet res = null;               // SQL query result set pointer
-        Statement s = null;                 // SQL statement pointer
-
-        // Connect to the inventory database
-        try
-        {
-            msgString = ">> Establishing Driver...";
-            jTextArea1.setText("\n"+msgString);
-
-            //load JDBC driver class for MySQL
-            Class.forName( "com.mysql.jdbc.Driver" );
-
-            msgString = ">> Setting up URL...";
-            jTextArea1.append("\n"+msgString);
-
-            //define the data source
-            String SQLServerIP = jTextField1.getText();
-            String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/inventory";
-
-            msgString = ">> Establishing connection with: " + sourceURL + "...";
-            jTextArea1.append("\n"+msgString);
-
-            //create a connection to the db - note the default account is "remote"
-            //and the password is "remote_pass" - you will have to set this
-            //account up in your database
-
-            DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
-        } catch (Exception e) {
-
-            errString =  "\nProblem connecting to database:: " + e;
-            jTextArea1.append(errString);
-            connectError = true;
-
-        } // end try-catch
-
-        // If we are connected, then we get the list of seeds from the
-        // inventory database
-
-        if ( !connectError )
-        {
-            try
-            {
-                s = DBConn.createStatement();
-                res = s.executeQuery( "Select * from seeds" );
-
-                //Display the data in the textarea
-                
-                jTextArea1.setText("");
-
-                while (res.next())
-                {
-                    msgString = res.getString(1) + " : " + res.getString(2) +
-                            " : $"+ res.getString(4) + " : " + res.getString(3)
-                            + " units in stock";
-                    jTextArea1.append(msgString+"\n");
-
-                } // while
-
-            } catch (Exception e) {
-
-                errString =  "\nProblem getting seed inventory:: " + e;
-                jTextArea1.append(errString);
-
-            } // end try-catch
-        } // if connect check
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // jButton3 is responsible for querying the inventory database and
-        // getting the shrub inventory. Once retieved, the shrub inventory is
-        // displayed in jTextArea1. From here the user can select an inventory
-        // item by triple clicking the item.
-
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
-        String errString = null;            // String for displaying errors
-        String msgString = null;            // String for displaying non-error messages
-        ResultSet res = null;               // SQL query result set pointer
-        Statement s = null;                 // SQL statement pointer
-
-        // Connect to the inventory database
-        try
-        {
-            msgString = ">> Establishing Driver...";
-            jTextArea1.setText("\n"+msgString);
-
-            //load JDBC driver class for MySQL
-            Class.forName( "com.mysql.jdbc.Driver" );
-
-            msgString = ">> Setting up URL...";
-            jTextArea1.append("\n"+msgString);
-
-            //define the data source
-            String SQLServerIP = jTextField1.getText();
-            String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/inventory";
-
-            msgString = ">> Establishing connection with: " + sourceURL + "...";
-            jTextArea1.append("\n"+msgString);
-
-            //create a connection to the db - note the default account is "remote"
-            //and the password is "remote_pass" - you will have to set this
-            //account up in your database
-
-            DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
-        } catch (Exception e) {
-
-            errString =  "\nProblem connecting to database:: " + e;
-            jTextArea1.append(errString);
-            connectError = true;
-
-        } // end try-catch
-
-        // If we are connected, then we get the list of shrubs from the
-        // inventory database
-
-        if ( !connectError )
-        {
-            try
-            {
-                s = DBConn.createStatement();
-                res = s.executeQuery( "Select * from shrubs" );
-
-                //Display the data in the textarea
-
-                jTextArea1.setText("");
-
-                while (res.next())
-                {
-                    msgString = res.getString(1) + " : " + res.getString(2) +
-                            " : $"+ res.getString(4) + " : " + res.getString(3)
-                            + " units in stock";
-                    jTextArea1.append(msgString+"\n");
-
-                } // while
-
-            } catch (Exception e) {
-
-                errString =  "\nProblem getting shrubs inventory:: " + e;
-                jTextArea1.append(errString);
-
-            } // end try-catch
-        } // if connect check
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
+
+    private void productTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productTypeComboBoxActionPerformed
+        // Combo box is responsible for querying the inventory database and
+        // getting the required inventory. Once retieved, the inventory is
+        // displayed in jTextArea1. From here the user can select an inventory
+        // item by triple clicking the item.
+
+        Boolean connectError = false;       // Error flag
+        Connection DBConn = null;           // MySQL connection handle
+        String errString = null;            // String for displaying errors
+        String msgString = null;            // String for displaying non-error messages
+        ResultSet res = null;               // SQL query result set pointer
+        Statement s = null;                 // SQL statement pointer
+
+        if ( !connectError )
+        {
+            try
+            {
+                List<Product> ans = backend.getProductsByType((String) productTypeComboBox.getSelectedItem());
+                
+                //Display the data in the textarea
+
+                jTextArea1.setText("");
+
+                for (Product p : ans) {
+                    msgString = p.getId() + " : " + p.getDescription() + 
+                            " : $" + p.getPrice() + " : " + p.getQuantity();
+                    jTextArea1.append(msgString + "\n");
+                }
+
+            } catch (Exception e) {
+
+                errString =  "\nProblem getting inventory:: " + e;
+                jTextArea1.append(errString);
+
+            } // end try-catch
+        } // if connect check
+    }//GEN-LAST:event_productTypeComboBoxActionPerformed
 
     /**
     * @param args the command line arguments
@@ -885,9 +679,6 @@ public class OrderApp extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
@@ -916,6 +707,7 @@ public class OrderApp extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
+    private javax.swing.JComboBox<String> productTypeComboBox;
     // End of variables declaration//GEN-END:variables
 
 }
