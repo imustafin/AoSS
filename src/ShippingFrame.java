@@ -316,20 +316,13 @@ public class ShippingFrame extends javax.swing.JFrame {
         // up the order. This table is opened and all the items are listed
         // in jTextArea3.
 
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle    
-        String errString = null;            // String for displaying errors
+        String errString;            // String for displaying errors
         int beginIndex;                     // Parsing index
         int endIndex;                       // Parsing index
-        String msgString = null;            // String for displaying non-error messages
-        String orderSelection = null;       // Order selected from TextArea1
-        String orderTable = null;           // The name of the table containing the order items
+        String msgString;            // String for displaying non-error messages
+        String orderSelection;       // Order selected from TextArea1
         String orderID = null;              // Product ID pnemonic
-        String productDescription = null;   // Product description
-        ResultSet res = null;               // SQL query result set pointer
-        Statement s = null;                 // SQL statement pointer
         Boolean orderBlank = false;         // False: order string is not blank
-        String SQLStatement;                // SQL query
 
         // this is the selected line of text
         orderSelection =  jTextArea1.getSelectedText();
@@ -343,16 +336,13 @@ public class ShippingFrame extends javax.swing.JFrame {
             beginIndex = beginIndex + 3; //skip past _#_
             endIndex = orderSelection.indexOf(" :", beginIndex);
             orderID = orderSelection.substring(beginIndex,endIndex);
-
         } else {
-
             msgString = ">> Order string is blank...";
             jTextArea4.setText("\n"+msgString);
             orderBlank = true;
-
         } // Blank string check
 
-        if ( !connectError && !orderBlank )
+        if (!orderBlank)
         {
             try
             { 
@@ -390,7 +380,7 @@ public class ShippingFrame extends javax.swing.JFrame {
                 msgString = "RECORD RETRIEVED...";
                 jTextArea4.setText(msgString);
                 
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | NumberFormatException | SQLException e) {
 
                 errString =  "\nProblem getting order items:: " + e;
                 jTextArea1.append(errString);
@@ -404,55 +394,40 @@ public class ShippingFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // This method is responsible changing the status of the order
         // to shipped.
+        String errString;            // String for displaying errors
 
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
-        String errString = null;            // String for displaying errors
-        String msgString = null;            // String for displaying non-error messages
-        ResultSet res = null;               // SQL query result set pointer
-        int rows;                           // Rows updated
-        Statement s = null;                 // SQL statement pointer
-        String SQLStatement = null;         // SQL statement string
+        try {
+            backend.setShipped(new backend.direct.Order(
+                    updateOrderID,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null));
 
-        // If we are connected, then we update the shipped status
+            jTextArea4.setText("\nOrder #" + updateOrderID + " status has been changed to shipped.");
 
-        if ( !connectError )
-        {
-            try {
-                backend.setShipped(new backend.direct.Order(
-                        updateOrderID,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null));
+            // Clean up the form
+            jButton1.setEnabled(false);
+            jButton3.setEnabled(false);
+            jTextArea1.setText("");
+            jTextArea2.setText("");
+            jTextArea3.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
 
-                jTextArea4.setText("\nOrder #" + updateOrderID + " status has been changed to shipped.");
+        } catch (Exception e) {
 
-                // Clean up the form
-                jButton1.setEnabled(false);
-                jButton3.setEnabled(false);
-                jTextArea1.setText("");
-                jTextArea2.setText("");
-                jTextArea3.setText("");
-                jTextField2.setText("");
-                jTextField3.setText("");
-                jTextField4.setText("");
-                jTextField5.setText("");
+            errString = "\nProblem updating status:: " + e;
+            jTextArea4.append(errString);
+            jTextArea1.setText("");
 
-            } catch (Exception e) {
-
-                errString =  "\nProblem updating status:: " + e;
-                jTextArea4.append(errString);
-                jTextArea1.setText("");
-
-            } // end try-catch
-
-        } // if connect check
-
+        } // end try-catch
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -471,18 +446,12 @@ public class ShippingFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField5ActionPerformed
 
     private void getOrders(boolean isShipped) {
-
         // This method is responsible for querying the orders database and
         // getting the list of pending orders. This are orders that have not
         // been shipped as of yet. The list of pending orders is written to
         // jTextArea1.
-        Boolean connectError = false;       // Error flag
-        Connection DBConn = null;           // MySQL connection handle
-        String errString = null;            // String for displaying errors
-        String msgString = null;            // String for displaying non-error messages
-        ResultSet res = null;               // SQL query result set pointer
-        Statement s = null;                 // SQL statement pointer
-        int shippedStatus;                  // if 0, order not shipped, if 1 order shipped
+        String errString;            // String for displaying errors
+        String msgString;            // String for displaying non-error messages
 
         // Clean up the form before we start
         jTextArea1.setText("");
@@ -508,12 +477,12 @@ public class ShippingFrame extends javax.swing.JFrame {
             jTextArea1.setText("");
 
             for (Order o : orders) {
-                jTextArea1.append((isShipped ? "SHIPPED " : "") + "ORDER # " + o.getId() + " : " + o.getOrderDate()
+                jTextArea1.append((isShipped ? "SHIPPED " : "")
+                        + "ORDER # " + o.getId() + " : " + o.getOrderDate()
                         + " : " + o.getFirstName() + " : " + o.getLastName() + "\n");
             }
 
-            // notify the user all went well and enable the select order
-            // button
+            // notify the user all went well and enable the select order button
             
             msgString = "\n" + (isShipped ? "SHIPPED" : "PENDING") + " ORDERS RETRIEVED...";
             jTextArea4.setText(msgString);
@@ -524,24 +493,11 @@ public class ShippingFrame extends javax.swing.JFrame {
             } else {
                 jButton3.setEnabled(true);
             }
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | SQLException e) {
             errString = "\nProblem getting inventory:: " + e;
             jTextArea4.append(errString);
         } // end try-catch
     }
-
-
-    /**
-    * @param args the command line arguments
-    */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ShippingFrame().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -572,5 +528,4 @@ public class ShippingFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     // End of variables declaration//GEN-END:variables
-
 }
