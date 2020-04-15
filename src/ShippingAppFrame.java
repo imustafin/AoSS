@@ -1,6 +1,7 @@
 
 import backend.direct.DirectBackend;
 import backend.interfaces.Order;
+import backend.interfaces.OrderProduct;
 import java.sql.*;
 import java.util.List;
 
@@ -354,43 +355,32 @@ public class ShippingAppFrame extends javax.swing.JFrame {
         if ( !connectError && !orderBlank )
         {
             try
-            {
-                s = DBConn.createStatement();
-                SQLStatement = "SELECT * FROM orders WHERE order_id = " + Integer.parseInt(orderID);
-                res = s.executeQuery( SQLStatement );
+            { 
+                Order order = backend.getOrders(new backend.direct.Order(
+                        Integer.parseInt(orderID),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null)).get(0);
                 
-                // Get the information from the database. Display the
-                // first and last name, address, phone number, address, and
-                // order date. Same the ordertable name - this is the name of
-                // the table that is created when an order is submitted that
-                // contains the list of order items.
-
-                while (res.next()) {
-                    
-                  orderTable = res.getString(9);         // name of table with list of items
-                  jTextField2.setText(res.getString(3)); // first name
-                  jTextField3.setText(res.getString(4)); // last name
-                  jTextField4.setText(res.getString(6)); // phone
-                  jTextField5.setText(res.getString(2)); // order date
-                  jTextArea2.setText(res.getString(5));  // address
-
-                } // for each element in the return SQL query
-
-                // get the order items from the related order table
-                SQLStatement = "SELECT * FROM " + orderTable;
-                res = s.executeQuery( SQLStatement );
-
+                jTextField2.setText(order.getFirstName());
+                jTextField3.setText(order.getLastName());
+                jTextField4.setText(order.getPhoneNumber());
+                jTextField5.setText(order.getOrderDate());
+                jTextArea2.setText(order.getAddress());
 
                 // list the items on the form that comprise the order
                 jTextArea3.setText("");
 
-                while (res.next())
-                {
-                    msgString = res.getString(1) + ":  PRODUCT ID: " + res.getString(2) +
-                         "  DESCRIPTION: "+ res.getString(3) + "  PRICE $" + res.getString(4);
+                for (OrderProduct p : order.getProducts()) {
+                    msgString = p.getIdInOrder() + ":  PRODUCT ID: " + p.getProductId() +
+                         "  DESCRIPTION: "+ p.getDescription() + "  PRICE $" + p.getPrice();
                     jTextArea3.append(msgString + "\n");
-
-                } // while
+                }
 
                 // This global variable is used to update the record as shipped
                 updateOrderID = Integer.parseInt(orderID);
