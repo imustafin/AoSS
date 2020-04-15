@@ -133,8 +133,51 @@ public class DirectBackend implements Backend {
     }
 
     @Override
-    public List<Order> getOrders(Boolean isShipped) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Order> getOrders(Boolean isShipped) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection("orderinfo");
+        
+        String sql = "SELECT * FROM orders";
+        if (isShipped != null) {
+            sql += " WHERE shipped = " + isShipped + ";";
+        } else {
+            sql += ";";
+        }
+
+        ResultSet res = con.createStatement().executeQuery(sql);
+        
+        List<Order> ans = new ArrayList<>();
+        
+        while (res.next()) {
+            String orderTable = res.getString("ordertable");
+            
+            sql = "SELECT * FROM " + orderTable;
+               
+            ResultSet prodRs = con.createStatement().executeQuery(sql);
+            
+            List<Product> products = new ArrayList<>();
+            while (prodRs.next()) {
+                products.add(new backend.direct.Product(
+                        null,
+                        prodRs.getString("product_id"),
+                        prodRs.getString("description"),
+                        null,
+                        prodRs.getFloat("item_price")
+                ));
+            }
+            
+            ans.add(new backend.direct.Order(
+                    res.getInt("order_id"),
+                    res.getString("first_name"),
+                    res.getString("last_name"),
+                    res.getString("phone"),
+                    res.getString("address"),
+                    res.getFloat("total_cost"),
+                    res.getBoolean("shipped"),
+                    res.getString("order_date"),
+                    products));
+        }
+        
+        return ans;
     }
     
     void addLeaftechProduct(Product product) throws SQLException, ClassNotFoundException {
