@@ -351,47 +351,6 @@ public class ShippingAppFrame extends javax.swing.JFrame {
 
         } // Blank string check
 
-        // If an order was selected, then connect to the orderinfo database. In
-        // all normal situations this would be impossible to do since the select
-        // button is disabled until an order is selected... just in case the
-        // check is here.
-
-        if ( !orderBlank )
-        {
-            try
-            {
-                msgString = ">> Establishing Driver...";
-                jTextArea4.setText("\n"+msgString);
-
-                //Load J Connector for MySQL - explicit loads are not needed for 
-                //connectors that are version 4 and better
-                //Class.forName( "com.mysql.jdbc.Driver" );
-
-                msgString = ">> Setting up URL...";
-                jTextArea4.append("\n"+msgString);
-
-                //define the data source
-                String SQLServerIP = jTextField1.getText();
-                String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/orderinfo";
-
-                msgString = ">> Establishing connection with: " + sourceURL + "...";
-                jTextArea4.append("\n"+msgString);
-
-                //create a connection to the db - note the default account is "remote"
-                //and the password is "remote_pass" - you will have to set this
-                //account up in your database
-                DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
-            } catch (Exception e) {
-
-                errString =  "\nProblem connecting to orderinfo database:: " + e;
-                jTextArea4.append(errString);
-                connectError = true;
-
-            } // end try-catch
-
-        } // blank order check 
-
         if ( !connectError && !orderBlank )
         {
             try
@@ -587,7 +546,17 @@ public class ShippingAppFrame extends javax.swing.JFrame {
         jTextField5.setText("");
 
         try {
-            List<Order> orders = backend.getOrders(isShipped);
+            List<Order> orders = backend.getOrders(new backend.direct.Order(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    isShipped,
+                    null,
+                    null
+            ));
             jTextArea1.setText("");
 
             for (Order o : orders) {

@@ -1,6 +1,7 @@
 
 import backend.direct.DirectBackend;
 import backend.interfaces.Backend;
+import backend.interfaces.OrderProduct;
 import backend.interfaces.Product;
 import java.sql.*;
 import java.util.ArrayList;
@@ -451,7 +452,7 @@ public class OrderApp extends javax.swing.JFrame {
 
             String[] items = jTextArea2.getText().split("\\n");
             
-            List<Product> products = new ArrayList<>();
+            List<OrderProduct> products = new ArrayList<>();
 
             for (int i = 0; i < items.length; i++) {
                 orderItem = items[i];
@@ -478,7 +479,7 @@ public class OrderApp extends javax.swing.JFrame {
                     sPerUnitCost = orderItem.substring(beginIndex, orderItem.length());
                     perUnitCost = Float.parseFloat(sPerUnitCost);
 
-                    products.add(new backend.direct.Product(null, productID, description, null, perUnitCost));
+                    products.add(new backend.direct.OrderProduct(null, productID, description, perUnitCost));
                 }
             }
 

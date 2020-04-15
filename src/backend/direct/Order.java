@@ -5,6 +5,7 @@
  */
 package backend.direct;
 
+import backend.interfaces.OrderProduct;
 import backend.interfaces.Product;
 import java.util.List;
 
@@ -21,11 +22,11 @@ public class Order implements backend.interfaces.Order {
     final Float totalCost;
     final Boolean isShipped;
     final String orderDate;
-    final List<Product> products;
+    final List<OrderProduct> products;
     
     public Order(Integer id, String firstName, String lastName, String phoneNumber,
             String address, Float totalCost, Boolean isShipped, String orderDate,
-            List<Product> products) {
+            List<OrderProduct> products) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -78,7 +79,7 @@ public class Order implements backend.interfaces.Order {
     }
 
     @Override
-    public List<Product> getProducts() {
+    public List<OrderProduct> getProducts() {
         return products;
     }
 }

@@ -7,6 +7,7 @@ package backend.direct;
 
 import backend.interfaces.Backend;
 import backend.interfaces.Order;
+import backend.interfaces.OrderProduct;
 import backend.interfaces.Product;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -133,15 +134,24 @@ public class DirectBackend implements Backend {
     }
 
     @Override
-    public List<Order> getOrders(Boolean isShipped) throws SQLException, ClassNotFoundException {
+    public List<Order> getOrders(Order order) throws SQLException, ClassNotFoundException {
         Connection con = getDbConnection("orderinfo");
         
         String sql = "SELECT * FROM orders";
-        if (isShipped != null) {
-            sql += " WHERE shipped = " + isShipped + ";";
-        } else {
-            sql += ";";
+        if (order.isShipped() != null || order.getId() != null) {
+            List<String> wheres = new ArrayList<>();
+            
+            if (order.isShipped() != null) {
+                wheres.add("shipped = " + order.isShipped());
+            }
+            if (order.getId() != null) {
+                wheres.add("order_id = " + order.getId());
+            }
+            
+            sql += " WHERE " + String.join(" AND ", wheres);
         }
+        
+        sql += ";";
 
         ResultSet res = con.createStatement().executeQuery(sql);
         
@@ -154,13 +164,12 @@ public class DirectBackend implements Backend {
                
             ResultSet prodRs = con.createStatement().executeQuery(sql);
             
-            List<Product> products = new ArrayList<>();
+            List<OrderProduct> products = new ArrayList<>();
             while (prodRs.next()) {
-                products.add(new backend.direct.Product(
-                        null,
+                products.add(new backend.direct.OrderProduct(
+                        prodRs.getInt("item_id"),
                         prodRs.getString("product_id"),
                         prodRs.getString("description"),
-                        null,
                         prodRs.getFloat("item_price")
                 ));
             }
@@ -335,8 +344,8 @@ public class DirectBackend implements Backend {
         // Fill new orders table
         
         List<String> values = new ArrayList<>();
-        for (Product p : order.getProducts()) {
-            values.add("('" + p.getId() + "', " + "'"
+        for (OrderProduct p : order.getProducts()) {
+            values.add("('" + p.getProductId() + "', " + "'"
               + p.getDescription() + "', " + p.getPrice() + " );");
         }
         

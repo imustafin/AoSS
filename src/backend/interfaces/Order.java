@@ -56,5 +56,5 @@ public interface Order {
     /**
      * @return products included in this order or null if there is no access to this field
      */
-    List<Product> getProducts();
+    List<OrderProduct> getProducts();
 }

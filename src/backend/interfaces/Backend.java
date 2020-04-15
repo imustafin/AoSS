@@ -26,11 +26,11 @@ public interface Backend {
     List<Product> getProductsByType(String type) throws Exception;
     
     /**
-     * @param isShipped filter by shipment status, null for no filter
-     * @return all orders registered
+     * @param order what filters to use (isShipped, id only), null for no filter
+     * @return orders matching this pattern
      * @throws java.lang.Exception specific exceptions depend on implementation
      */
-    List<Order> getOrders(Boolean isShipped) throws Exception;
+    List<Order> getOrders(Order order) throws Exception;
     
     /**
      * Add product to database
@@ -59,4 +59,7 @@ public interface Backend {
     List<Product> decrementProduct(Product product) throws Exception;
     
     void addOrder(Order order) throws Exception;
+    
+    
+    
 }
