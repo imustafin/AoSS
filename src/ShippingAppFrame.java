@@ -414,65 +414,23 @@ public class ShippingAppFrame extends javax.swing.JFrame {
         Statement s = null;                 // SQL statement pointer
         String SQLStatement = null;         // SQL statement string
 
-        // Connect to the order database
-        try
-        {
-            msgString = ">> Establishing Driver...";
-            jTextArea4.setText("\n"+msgString);
-
-            //load JDBC driver class for MySQL
-            Class.forName( "com.mysql.jdbc.Driver" );
-
-            msgString = ">> Setting up URL...";
-            jTextArea4.append("\n"+msgString);
-
-            //define the data source
-            String SQLServerIP = jTextField1.getText();
-            String sourceURL = "jdbc:mysql://" + SQLServerIP + ":3306/orderinfo";
-
-            msgString = ">> Establishing connection with: " + sourceURL + "...";
-            jTextArea4.append("\n"+msgString);
-
-            //create a connection to the db - note the default account is "remote"
-            //and the password is "remote_pass" - you will have to set this
-            //account up in your database
-            DBConn = DriverManager.getConnection(sourceURL,"remote","remote_pass");
-
-        } catch (Exception e) {
-
-            errString =  "\nProblem connecting to orderinfo database:: " + e;
-            jTextArea4.append(errString);
-            connectError = true;
-
-        } // end try-catch
-
         // If we are connected, then we update the shipped status
 
         if ( !connectError )
         {
-            try
-            {
-                // first we create the query
-                s = DBConn.createStatement();
-                SQLStatement = "UPDATE orders SET shipped=" + true + " WHERE order_id=" + updateOrderID;
+            try {
+                backend.setShipped(new backend.direct.Order(
+                        updateOrderID,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null));
 
-                // execute the statement
-                rows = s.executeUpdate( SQLStatement );
-
-                // if the query worked, then we display the data in TextArea 4 - BTW, its highly
-                // unlikely that the row won't exist and if it does the database tables are
-                // really screwed up... this should not fail if you get here, but the check (in the
-                // form of the else clause) is in place anyway
-
-                if (rows > 0)
-                {
-                   jTextArea4.setText("\nOrder #" + updateOrderID + " status has been changed to shipped.");
-
-                } else {
-
-                   jTextArea4.setText("\nOrder #" + updateOrderID + " record not found.");
-
-                } // execute check
+                jTextArea4.setText("\nOrder #" + updateOrderID + " status has been changed to shipped.");
 
                 // Clean up the form
                 jButton1.setEnabled(false);

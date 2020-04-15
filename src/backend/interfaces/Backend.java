@@ -60,6 +60,6 @@ public interface Backend {
     
     void addOrder(Order order) throws Exception;
     
-    
+    void setShipped(Order order) throws Exception;
     
 }

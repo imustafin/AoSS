@@ -355,4 +355,13 @@ public class DirectBackend implements Backend {
         
         con.createStatement().execute(sql);
     }
+
+    @Override
+    public void setShipped(Order order) throws Exception {
+        Connection con = getDbConnection("orderinfo");
+        
+        String sql = "UPDATE orders SET shipped=" + true + " WHERE order_id=" + order.getId();
+        
+        con.createStatement().execute(sql);
+    }
 }
