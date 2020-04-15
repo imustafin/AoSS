@@ -57,4 +57,6 @@ public interface Backend {
      * @throws Exception specific exceptions depend on implementation
      */
     List<Product> decrementProduct(Product product) throws Exception;
+    
+    void addOrder(Order order) throws Exception;
 }

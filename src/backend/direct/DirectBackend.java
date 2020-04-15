@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -249,5 +250,57 @@ public class DirectBackend implements Backend {
         }
         
         return new ArrayList<>();
+    }
+
+    @Override
+    public void addOrder(Order order) throws Exception {
+        Calendar rightNow = Calendar.getInstance();
+
+        int TheHour = rightNow.get(rightNow.HOUR_OF_DAY);
+        int TheMinute = rightNow.get(rightNow.MINUTE);
+        int TheSecond = rightNow.get(rightNow.SECOND);
+        int TheDay = rightNow.get(rightNow.DAY_OF_WEEK);
+        int TheMonth = rightNow.get(rightNow.MONTH);
+        int TheYear = rightNow.get(rightNow.YEAR);
+        
+        String dateTimeStamp = TheMonth + "/" + TheDay + "/" + TheYear + " "
+                + TheHour + ":" + TheMinute + ":" + TheSecond;
+        
+        // Create order table
+        
+        String orderTableName = "order" + String.valueOf(rightNow.getTimeInMillis());
+
+        String sql = "CREATE TABLE " + orderTableName
+                + "(item_id int unsigned not null auto_increment primary key, "
+                + "product_id varchar(20), description varchar(80), "
+                + "item_price float(7,2) );";
+        
+        Connection con = getDbConnection("orderinfo");
+        
+        con.createStatement().execute(sql);
+        // Add new order
+        
+        sql = "INSERT INTO orders (order_date, " + "first_name, "
+                + "last_name, address, phone, total_cost, shipped, "
+                + "ordertable) VALUES ( '" + dateTimeStamp + "', "
+                + "'" + order.getFirstName() + "', " + "'" + order.getLastName() + "', "
+                + "'" + order.getAddress() + "', " + "'" + order.getAddress() + "', "
+                + order.getTotalCost() + ", " + false + ", '" + orderTableName + "' );";
+        
+        con.createStatement().execute(sql);
+        
+        // Fill new orders table
+        
+        List<String> values = new ArrayList<>();
+        for (Product p : order.getProducts()) {
+            values.add("('" + p.getId() + "', " + "'"
+              + p.getDescription() + "', " + p.getPrice() + " );");
+        }
+        
+        sql = "INSERT INTO " + orderTableName
+              + " (product_id, description, item_price) "
+              + "VALUES " + String.join(", ", values);
+        
+        con.createStatement().execute(sql);
     }
 }
