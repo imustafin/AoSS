@@ -35,8 +35,8 @@ public class InventoryFrame extends javax.swing.JFrame {
     String versionID = "v2.10.11";
 
     /** Creates new form AddInventoryMainFrame */
-    public InventoryFrame() {
-        backend = new DirectBackend("localhost", "remote", "remote_pass");
+    public InventoryFrame(DirectBackend backend) {
+        this.backend = backend;
 
         initComponents();
         jLabel1.setText("Inventory Management Application " + versionID);

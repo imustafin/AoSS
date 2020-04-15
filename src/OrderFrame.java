@@ -31,9 +31,8 @@ public class OrderFrame extends javax.swing.JFrame {
 
     final DirectBackend backend;
 
-    /** Creates new form NewJFrame */
-    public OrderFrame() {
-        backend = new DirectBackend("localhost", "remote", "remote_pass");
+    public OrderFrame(DirectBackend backend) {
+        this.backend = backend;
         initComponents();
         jLabel1.setText("Order Management Application " + versionID);
     }

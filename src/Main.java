@@ -1,3 +1,6 @@
+
+import backend.direct.DirectBackend;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,10 +13,14 @@
  */
 public class Main extends javax.swing.JFrame {
 
+    DirectBackend backend;
+    
     /**
      * Creates new form Main
      */
     public Main() {
+        backend = new DirectBackend("localhost", "remote", "remote_pass");
+        
         initComponents();
     }
 
@@ -83,19 +90,19 @@ public class Main extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        new InventoryFrame().setVisible(true);
+        new InventoryFrame(backend).setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        new OrderFrame().setVisible(true);
+        new OrderFrame(backend).setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        new ShippingFrame().setVisible(true);
+        new ShippingFrame(backend).setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton4ActionPerformed
 

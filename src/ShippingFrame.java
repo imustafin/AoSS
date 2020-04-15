@@ -2,7 +2,7 @@
 import backend.direct.DirectBackend;
 import backend.interfaces.Order;
 import backend.interfaces.OrderProduct;
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.List;
 
  /******************************************************************************
@@ -28,9 +28,8 @@ public class ShippingFrame extends javax.swing.JFrame {
     
     DirectBackend backend;
     
-    /** Creates new form NewJFrame */
-    public ShippingFrame() {
-        backend = new DirectBackend("localhost", "remote", "remote_pass");
+    public ShippingFrame(DirectBackend backend) {
+        this.backend = backend;
         
         initComponents();
         jLabel1.setText("Shipping Application " + versionID);
@@ -421,7 +420,7 @@ public class ShippingFrame extends javax.swing.JFrame {
             jTextField4.setText("");
             jTextField5.setText("");
 
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | SQLException e) {
 
             errString = "\nProblem updating status:: " + e;
             jTextArea4.append(errString);
