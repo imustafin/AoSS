@@ -1,9 +1,16 @@
 
 import backend.direct.DirectBackend;
+import backend.direct.User;
 import backend.interfaces.Order;
 import backend.interfaces.OrderProduct;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
  /******************************************************************************
  * File:NewJFrame.java
@@ -27,12 +34,18 @@ public class ShippingFrame extends javax.swing.JFrame {
     String versionID = "v2.10.11";
     
     DirectBackend backend;
+    User user;
     
     public ShippingFrame(DirectBackend backend) {
         this.backend = backend;
         
         initComponents();
         jLabel1.setText("Shipping Application " + versionID);
+    }
+    
+    public ShippingFrame(DirectBackend backend, User user) {
+    	this(backend);
+        this.user = user;
     }
 
     /** This method is called from within the constructor to
@@ -70,8 +83,28 @@ public class ShippingFrame extends javax.swing.JFrame {
         jTextArea4 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jTextField5 = new javax.swing.JTextField();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        
+        this.addWindowListener( new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
+                JFrame frame = (JFrame)e.getSource();
+         
+                int result = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Are you sure you want to exit the application?",
+                    "Exit Application",
+                    JOptionPane.YES_NO_OPTION);
+         
+                if (result == JOptionPane.YES_OPTION) {
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                	backend.logUserLogout(user);
+                }
+                
+            }
+        });
 
         jLabel1.setText("Shipping Application");
 
@@ -173,7 +206,7 @@ public class ShippingFrame extends javax.swing.JFrame {
         });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        getContentPane().setLayout(layout);        
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()

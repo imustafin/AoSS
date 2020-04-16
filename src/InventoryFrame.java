@@ -1,10 +1,16 @@
 
 import backend.direct.DirectBackend;
+import backend.direct.User;
 import backend.interfaces.Product;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /******************************************************************************
  * File:NewJFrame.java
@@ -41,8 +47,14 @@ public class InventoryFrame extends javax.swing.JFrame {
         initComponents();
         jLabel1.setText("Inventory Management Application " + versionID);
     }
+    
+    public InventoryFrame(DirectBackend backend, User user) {
+    	this(backend);
+    	this.user = user;
+    }
 
     DirectBackend backend;
+    User user;
 
     ComboBoxModel<String> getProductTypeComboBoxModel() {
         List<String> typeList = backend.getProductTypes();
@@ -90,7 +102,27 @@ public class InventoryFrame extends javax.swing.JFrame {
         jTextField5 = new javax.swing.JTextField();
         productTypeComboBox = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        
+        this.addWindowListener( new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
+                JFrame frame = (JFrame)e.getSource();
+         
+                int result = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Are you sure you want to exit the application?",
+                    "Exit Application",
+                    JOptionPane.YES_NO_OPTION);
+         
+                if (result == JOptionPane.YES_OPTION) {
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                	backend.logUserLogout(user);
+                }
+                
+            }
+        });
 
         jLabel1.setText("Inventory Management System");
 

@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,7 +38,7 @@ public class DirectBackend implements Backend {
     Connection getDbConnection(String database) throws SQLException, ClassNotFoundException {
         Class.forName( "com.mysql.jdbc.Driver" );
         
-        String url = "jdbc:mysql://" + host + ":3306/" + database;
+        String url = "jdbc:mysql://" + host + ":3306/" + database + "?serverTimezone=UTC";
         
         return DriverManager.getConnection(url, user, password);
     }
@@ -363,5 +365,59 @@ public class DirectBackend implements Backend {
         String sql = "UPDATE orders SET shipped=" + true + " WHERE order_id=" + order.getId();
         
         con.createStatement().execute(sql);
+    }
+    
+    public User userLogin(String login, String password) throws ClassNotFoundException, SQLException {    	
+    	Connection con = getDbConnection("users_db");
+    	
+    	String sql = "SELECT * FROM users u WHERE u.login = '" + login + "' AND u.password = '" + password + "';";
+    	ResultSet res = con.createStatement().executeQuery(sql);
+    	User user = null;
+    	if (res.next()) {
+        	user = new User(res.getString("login"), res.getString("password"), res.getInt("department_code"));
+        	logUserLogin(user);
+    	}
+    			
+		return user;
+	}
+    
+    public boolean logUserLogin(User user) {
+    	boolean result = false;
+    	
+		try {
+	    	Connection con = getDbConnection("users_db");
+	    	
+	    	String sql = "INSERT INTO registry "
+	                + " (login, time, action) "
+	                + "VALUES ('" + user.login + "', '" + Timestamp.valueOf(LocalDateTime.now()) + "', 'IN')" + ";";
+	          
+	        con.createStatement().execute(sql);
+	        
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	    	
+    	return result;
+    }
+    
+    public boolean logUserLogout(User user) {
+    	boolean result = false;
+    	
+		try {
+	    	Connection con = getDbConnection("users_db");
+	    	
+	    	String sql = "INSERT INTO registry "
+	                + " (login, time, action) "
+	                + "VALUES ('" + user.login + "', '" + Timestamp.valueOf(LocalDateTime.now()) + "', 'OUT')" + ";";
+	          
+	        con.createStatement().execute(sql);
+	        
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	    	
+    	return result;
     }
 }
