@@ -36,7 +36,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('admin', 'admin', 0), ('orders_usr', 'orders_usr', 1), ('inventory_usr', 'inventory_usr', 2);
+INSERT INTO `users` VALUES ('shipping_usr', 'shipping_usr', 3), ('orders_usr', 'orders_usr', 1), ('inventory_usr', 'inventory_usr', 2);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,7 +60,6 @@ CREATE TABLE `registry` (
 
 LOCK TABLES `registry` WRITE;
 /*!40000 ALTER TABLE `registry` DISABLE KEYS */;
-INSERT INTO `registry` VALUES ('admin', '2020-01-19 03:14:07+05:30', 'IN');
 /*!40000 ALTER TABLE `registry` ENABLE KEYS */;
 UNLOCK TABLES;
 
