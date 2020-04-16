@@ -1,5 +1,10 @@
 
+import java.sql.SQLException;
+
+import backend.direct.Departments;
 import backend.direct.DirectBackend;
+import backend.direct.User;
+import sun.awt.X11.Depth;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -37,6 +42,16 @@ public class Main extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
 
+        loginFld = new javax.swing.JTextField(16);
+        loginFld.setEditable(true);
+        
+        passwordFld = new javax.swing.JTextField(20);
+        passwordFld.setEditable(true);
+        
+        loginBtn = new javax.swing.JButton();
+        
+        dbServerAdressFld = new javax.swing.JTextArea();
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton2.setText("Leaftech Inventory");
@@ -59,6 +74,17 @@ public class Main extends javax.swing.JFrame {
                 jButton4ActionPerformed(evt);
             }
         });
+        
+        loginFld.setText("");
+        
+        passwordFld.setText("");
+        
+        loginBtn.setText("Login");
+        loginBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	loginBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -71,6 +97,9 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addComponent(jButton2)
+                .addComponent(loginFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(loginBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -79,6 +108,9 @@ public class Main extends javax.swing.JFrame {
                 .addGap(43, 43, 43)
                 .addComponent(jButton2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(loginFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(loginBtn)
                 .addComponent(jButton3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton4)
@@ -105,6 +137,33 @@ public class Main extends javax.swing.JFrame {
         new ShippingFrame(backend).setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton4ActionPerformed
+    
+    private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
+    	
+    	try {
+        	User user = backend.userLogin(loginFld.getText(), passwordFld.getText());
+        	if (user != null) {
+        		switch (user.getDepartmentCode()) {
+        		case ORDERS_DEPT:
+        	        new OrderFrame(backend, user).setVisible(true);
+        	        this.setVisible(false);
+        	        break;
+        		case SHIPPING_DEPT:
+        	        new ShippingFrame(backend, user).setVisible(true);
+        	        this.setVisible(false);
+        	        break;
+        		case INVENTORY_DEPT:
+        	        new InventoryFrame(backend, user).setVisible(true);
+        	        this.setVisible(false);
+        	        break;
+    	        default :
+    	        	//TODO what to show in this case? Admin panel?                			
+            	}
+        	}
+    	} catch(SQLException | ClassNotFoundException e) {
+    		e.printStackTrace();
+    	}
+    }
 
     /**
      * @param args the command line arguments
@@ -145,5 +204,11 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+
+    private javax.swing.JTextField loginFld;
+    private javax.swing.JTextField passwordFld;
+    private javax.swing.JButton loginBtn;
+    
+    private javax.swing.JTextArea dbServerAdressFld;
     // End of variables declaration//GEN-END:variables
 }

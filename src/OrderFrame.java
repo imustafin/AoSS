@@ -1,12 +1,18 @@
 
 import backend.direct.DirectBackend;
+import backend.direct.User;
 import backend.interfaces.OrderProduct;
 import backend.interfaces.Product;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /******************************************************************************
 * File:NewJFrame.java
@@ -30,11 +36,17 @@ public class OrderFrame extends javax.swing.JFrame {
     String versionID = "v2.10.11";
 
     final DirectBackend backend;
+    User user;
 
     public OrderFrame(DirectBackend backend) {
         this.backend = backend;
         initComponents();
         jLabel1.setText("Order Management Application " + versionID);
+    }
+    
+    public OrderFrame(DirectBackend backend, User user) {
+        this(backend);
+        this.user = user;
     }
 
     /** This method is called from within the constructor to
@@ -74,8 +86,28 @@ public class OrderFrame extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         productTypeComboBox = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        
+        this.addWindowListener( new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
+                JFrame frame = (JFrame)e.getSource();
+         
+                int result = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Are you sure you want to exit the application?",
+                    "Exit Application",
+                    JOptionPane.YES_NO_OPTION);
+         
+                if (result == JOptionPane.YES_OPTION) {
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                	backend.logUserLogout(user);
+                }
+                
+            }
+        });
+        
         jLabel1.setText("Order Management Application");
 
         jTextArea1.setEditable(false);
