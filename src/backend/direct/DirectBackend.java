@@ -38,7 +38,7 @@ public class DirectBackend implements Backend {
     Connection getDbConnection(String database) throws SQLException, ClassNotFoundException {
         Class.forName( "com.mysql.jdbc.Driver" );
         
-        String url = "jdbc:mysql://" + host + ":3306/" + database;
+        String url = "jdbc:mysql://" + host + ":3306/" + database + "?serverTimezone=UTC";
         
         return DriverManager.getConnection(url, user, password);
     }
