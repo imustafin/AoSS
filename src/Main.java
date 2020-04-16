@@ -1,10 +1,8 @@
 
 import java.sql.SQLException;
 
-import backend.direct.Departments;
 import backend.direct.DirectBackend;
 import backend.direct.User;
-import sun.awt.X11.Depth;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,13 +17,13 @@ import sun.awt.X11.Depth;
 public class Main extends javax.swing.JFrame {
 
     DirectBackend backend;
-    
+
     /**
      * Creates new form Main
      */
     public Main() {
         backend = new DirectBackend("localhost", "remote", "remote_pass");
-        
+
         initComponents();
     }
 
@@ -114,7 +112,7 @@ public class Main extends javax.swing.JFrame {
         	        this.setVisible(false);
         	        break;
     	        default :
-    	        	//TODO what to show in this case? Admin panel?                			
+    	        	//TODO what to show in this case? Admin panel?
             	}
         	}
     	} catch(SQLException | ClassNotFoundException e) {
@@ -129,7 +127,7 @@ public class Main extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
