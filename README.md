@@ -1,5 +1,7 @@
 # AoSS
 homework on github https://github.com/imustafin/AoSS
+
+Java Swing+JDBC warehouse application refactoring university assignment.
 # Database
 Database setup is the same as it was in the original version and can be
 set up with the same instructions as in the original task.
